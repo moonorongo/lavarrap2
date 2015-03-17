@@ -1,0 +1,54 @@
+/* 
+    Document   : insumosServicios
+    Created on : 14/08/2013, 20:36:26
+    Author     : mauro
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.listaItemsContainer {
+    width: 435px;
+    height: 205px;
+    /*margin-top: 10px;*/
+    overflow-y: scroll;
+
+}
+
+.headerLista {
+    margin: 7px 0;
+    color: white;
+    border-radius: 3px;
+    overflow: hidden;    
+}
+
+.headerLista div {
+    background-color: lightslategray;
+    padding-left: 5px;
+}
+
+li div.view {
+    display : block;
+    background-color: white;    
+}
+
+li div.edit {
+    display : none;
+}
+
+li.stateEdit div.view {
+    display : none;
+}
+
+li.stateEdit div.edit {
+    display : block;
+    background-color: #fefefe;
+}
+
+li.ulRow {
+    height: 28px;
+    border-bottom: 1px dashed #bbb;
+    padding: 3px 6px;
+}
+
+
+.deleted { display : none;}

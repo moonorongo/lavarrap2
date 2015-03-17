@@ -1,0 +1,286 @@
+.clear {
+  clear: both;
+}
+
+.floatLeft {
+  float: left;
+}
+
+.floatRight {
+  float: right;
+}
+
+.hide {
+    display: none;
+}
+
+.singleRow {
+    text-overflow: clip;
+    overflow: hidden;
+    white-space: nowrap;    
+}
+
+/* TAGS  -------------------------------------------------------- */
+strong {
+  font-weight: bold;
+}
+
+body {
+  background-color: white;
+  font-family: Arial;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+input, textarea {
+    padding: 5px;
+    height: 14px;
+    border: 1px solid #aaa;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;    
+}
+
+select {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -moz-box-shadow: 0 1px 2px #ddd;
+    -webkit-box-shadow: 0 1px 2px #ddd;
+    box-shadow: 0 1px 2px #ddd;
+    border: 1px solid #aaa;
+    color: #333333;
+    padding: 3px;
+    margin: 0;
+    
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ccc));
+    background-image: -webkit-linear-gradient(top, #fff, #ccc);
+    background-image: -moz-linear-gradient(top, #fff, #ccc);
+    background-image: -ms-linear-gradient(top, #fff, #ccc);
+    background-image: -o-linear-gradient(top, #fff, #ccc);
+    background-image: linear-gradient(to bottom, #fff, #ccc);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#ccc);    
+    /*background: url(./themes/pmahomme/img/input_bg.gif);    */
+}
+
+/* BACKGROUNDS Y CONTAINERS */
+.centered {
+    position: absolute;
+    width: 980px;
+    margin: 0 50%;
+    left: -490px;
+}
+
+
+ 
+
+.menuBar {
+    height: 36px;
+    background-image: url(/static/img/menuHeaderBg.gif);
+    background-repeat: repeat-x;
+    background-position: top;
+    border-bottom: 2px solid #04202d;
+    padding: 6px 0;
+}
+
+
+.rowSelected {
+    background-color: orange !important;
+}
+
+.mainApp {
+    background-image: url(/static/img/masthead-pat.gif);
+    height: 1300px;
+}
+
+.mainAppBackground {
+    background-color: rgba(255,255,255,0.6);
+    height: 1300px;
+    box-shadow: 0px 0px 5px #888888;
+    padding: 20px;
+}
+
+
+#logo {
+    width: 170px;
+    height: 32px;
+    position: relative;
+    padding: 2px;
+    float: left;    
+    text-align: right;
+}
+
+
+
+
+.dataTableWrapper {
+    height: 400px;
+}
+
+.ABMButtons {
+    float: left;
+    margin-right: 20px;
+}
+
+button.ABMButton {
+    margin: 0 6px 0 0;
+/*    padding: 0 6px;    */
+}
+
+
+
+    .popupButtons { 
+            position: absolute;
+            bottom: 11px;
+            text-align: right;
+            right: 11px;	
+    }
+
+       .popupButtons button {
+           margin-left: 5px;
+       }
+       
+       button.ui-dialog-titlebar-close { display: none;}
+       
+       .popupContainer {
+            line-height: 28px;           
+       }       
+
+    
+.roundedBorder {
+    border: 1px solid #aaa;
+    border-radius: 5px;     
+}
+
+
+
+
+button {
+border:1px solid #d7dada; 
+    -webkit-border-radius: 13px; 
+    -moz-border-radius: 13px;
+    border-radius: 13px;
+    
+    font-size:12px;font-family:arial, helvetica, sans-serif; 
+    padding: 5px 13px;
+    text-decoration:none; display:inline-block;text-shadow: 1px 1px 0 rgba(255,255,255,0.9); color: #333;
+
+    background: #ededed url(images/bg_fallback.png) 0 0 repeat-x; /* Old browsers */
+    background: -moz-linear-gradient(top, #ededed 0%, #aaa 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(100%,#aaa)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #ededed 0%,#aaa 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #ededed 0%,#aaa 100%); /* Opera11.10+ */
+    background: -ms-linear-gradient(top, #ededed 0%,#aaa 100%); /* IE10+ */
+    background: linear-gradient(top, #ededed 0%,#aaa 100%); /* W3C */
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+ 
+ 
+}
+
+/*  ACLARAR ESTO  */
+button:hover {
+ border:1px solid #bfc4c4;
+ background-color: #d9dddd; 
+ background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ccc));
+ background-image: -webkit-linear-gradient(top, #fff, #ccc);
+ background-image: -moz-linear-gradient(top, #fff, #ccc);
+ background-image: -ms-linear-gradient(top, #fff, #ccc);
+ background-image: -o-linear-gradient(top, #fff, #ccc);
+ background-image: linear-gradient(to bottom, #fff, #ccc);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#ccc);
+}
+
+button:focus { 
+    -webkit-box-shadow: 0 0px 7px 2px rgba(90,90,255,0.6);
+    -moz-box-shadow: 0 0px 7px 2px rgba(90,90,255,0.6); 
+    box-shadow: 0 0px 7px 2px rgba(90,90,255,0.6);
+}
+
+
+
+
+
+button:disabled {
+    opacity: 0.5;
+}
+
+
+
+
+
+button.smallButton {
+    padding: 4px;
+    margin: 0px 3px;    
+}
+
+a.switchLink {
+    color: white;
+}
+
+a.switchLink:hover {
+    color: #eee;
+}
+
+
+
+
+form#clientesForm label {
+    display: inline-block;
+    width: 80px;
+    text-align: right;    
+}
+
+.labelForm {
+    display: inline-block;
+    width: 80px;
+    text-align: right;    
+}
+
+
+table.serviciosEntregaPedido tr {
+    display: table-row;    
+}
+
+table.serviciosEntregaPedido td {
+    border-bottom: 1px dotted lightslategray;
+    height: 18px;
+    line-height: 18px;
+    margin: 0;
+    padding: 7px 8px 0px 0;   
+}
+
+tr.sinBordeInferior td,th {
+    border-bottom: 0;
+}
+
+table.serviciosEntregaPedido th {
+    background-color: lightslategray;
+    color: white;
+    height: 25px;
+    line-height: 25px;
+    margin: 0;
+    padding: 0px 8px;
+}
+
+
+
+.tareaDerivada {
+    color: #aaa;
+    background-color: #ddd !important;
+}
+
+
+.datepickerReporte {
+    width: 70px;
+    margin-bottom: 3px;
+}
+
+
+.saldoDeCajaContainer {
+    display: inline-block;
+    margin-left: 40px;
+}
+
+.saldoDeCajaContainer span {
+    font-weight: bold;
+}
