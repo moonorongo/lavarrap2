@@ -31,7 +31,7 @@
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/fn.php");
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/class.pdf_tickets.php");
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/underscore.php"); 
-
+    
     
     
 ?>

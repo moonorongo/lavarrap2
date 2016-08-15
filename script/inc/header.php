@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="static/css/Aristo/Aristo.css">
     <link rel="stylesheet" type="text/css" href="static/css/ultimateMenu.css">
     <link rel="stylesheet" type="text/css" href="static/css/font-awesome.css">
-    <link rel="stylesheet" type="text/css" href="static/css/chosen/chosen.css">
+<!--    <link rel="stylesheet" type="text/css" href="static/css/chosen/chosen.css">  -->
 
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <link rel="stylesheet" type="text/css" href="static/css/insumosServicios.css">
@@ -32,15 +32,11 @@
     <script src="static/js/lib/moment.min.js"></script>
     <script src="static/js/lib/datatables.fnRedrawAjax.js"></script>
     <script src="static/js/lib/backbone.collectionView.min.js"></script>
-    <script src="static/js/lib/chosen.jquery.min.js"></script>
-    
-    
+<!--    <script src="static/js/lib/chosen.jquery.min.js"></script>  -->
     
     <script>
-        
         globalConfig = {};
         globalConfig.SESSIONID = '<?php echo session_id() ?>';
-
         
         $.extend($.ui.dialog.prototype.options, {
                 closeOnEscape: false
