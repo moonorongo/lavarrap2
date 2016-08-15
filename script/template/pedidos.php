@@ -44,9 +44,8 @@
         </label>
 
         <label for="codigoCliente" style="margin-left: 20px">Cliente 
-            <select id="codigoCliente" style="width: 160px" class="obligatorio focusThis" title="Cliente" <@= (!isNew)? " disabled " : "" @> >
-                <option value=""></option>
-            </select>
+            <select id="codigoCliente" style="display:none" class="obligatorio" title="Cliente" <@= (!isNew)? " disabled " : "" @> ></select>
+            <input id="searchCliente" style="width: 175px;" class="focusThis" value="<@= _nombreCliente @>" <@= (!isNew)? " disabled " : "" @> />
         </label>
         <button class="button smallButton" id="addCliente" title="Agregar Cliente" <@= (!isNew)? " disabled " : "" @> ><i class="icon-plus"></i></button>
         
