@@ -10,7 +10,7 @@
             $this->mysql = $mysql;
         }
         
-        private function getNewId() {
+/*        private function getNewId() {
             $result = $this->mysql->query("SELECT codigo FROM serviciosPedidos ORDER BY codigo desc limit 1");
             if($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
@@ -20,7 +20,7 @@
                 $out = 1;
             }
             return $out;
-        }
+        }*/
         
         
         public function listAll($codigoEstado) {
@@ -170,7 +170,6 @@
 
         
         public function delete($codigo) {
-            // esto no es lo mas optimo... 
             $stmt = $this->mysql->getStmt("DELETE FROM serviciosPedidos WHERE codigo =  ?");
             $stmt -> bind_param("i", $codigo);
             $stmt -> execute();
@@ -187,11 +186,10 @@
         
 
         public function create($modelData) {
-        
-            $newId = $this->getNewId();
-            $sql = "INSERT INTO serviciosPedidos (codigo) VALUES ($newId)"; 
+            $sql = "INSERT INTO serviciosPedidos (codigoPedido) VALUES (null)"; 
             $result = $this->mysql->query($sql);
-            $modelData["codigo"] = $newId;
+            $modelData["codigo"] = $this->mysql->getLastId();
+            
             $this->update($modelData);
         }
 
@@ -199,7 +197,6 @@
   
         
         public function update($modelData) {
-            
             $sql = "UPDATE serviciosPedidos SET 
                    codigoServicio = ?,
                    codigoPedido = ?,
