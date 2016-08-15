@@ -14,21 +14,6 @@
         
 
         
-        private function getNewId() {
-            $result = $this->mysql->query("SELECT codigo FROM clientes ORDER BY codigo desc limit 1");
-            if($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                $out = $row["codigo"] + 1;
-                }
-            } else {
-                $out = 1;
-            }
-            return $out;
-        }
-        
-        
-        
-        
         public function listAll() {
             $out = Array();
             $result = $this->mysql->query("SELECT * FROM clientes WHERE activo = 1 AND codigoSucursal = ". $this->codigoSucursal);
@@ -42,11 +27,9 @@
         
         
         public function create($modelData) {
-        
-            $newId = $this->getNewId();
-            $sql = "INSERT INTO clientes(codigo) VALUES ($newId)"; 
+            $sql = "INSERT INTO clientes (nombres) VALUES (null)"; 
             $result = $this->mysql->query($sql);
-            $modelData["codigo"] = $newId;
+            $modelData["codigo"] = $this->mysql->getLastId();
             $this->update($modelData);
             return $modelData["codigo"];
         }
@@ -159,12 +142,12 @@
             return $out;
         }
         
-
-        
         
 
         public function listByNombre($term = null) {
+            $out = array();
             if($term != null) {
+                
                 $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido FROM clientes WHERE 
                     ((nombres LIKE ?) OR (apellido LIKE ?)) AND codigoSucursal = ". $this->codigoSucursal);
 
@@ -178,9 +161,7 @@
 
                 while($stmt->fetch()) {
                     $tmpRow = array("id" => $codigo,
-                               "label" => $nombres ." ". $apellido,
-                               "value" => $nombres ." ". $apellido
-                              );
+                               "value" => $nombres ." ". $apellido);
                     $out[] = $tmpRow;
                 }
 
@@ -188,9 +169,22 @@
                 return $out;
                 
             } else { // van todos los clientes activos.
-                
-                $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido FROM clientes WHERE 
-                    activo = 1 AND codigoSucursal = ". $this->codigoSucursal);
+                     // que hayan hecho pedido en los ultimos 6 meses
+
+                $sqlClientes = "select distinct
+                                    clientes.codigo, 
+                                    clientes.nombres,
+                                    clientes.apellido
+                                from 
+                                    clientes
+                                join pedidos on pedidos.codigoCliente = clientes.codigo
+                                where 
+                                  (pedidos.fechaPedido > DATE_SUB(NOW(), INTERVAL 6 MONTH)) and 
+                                  (clientes.codigoSucursal = ". $this->codigoSucursal .") and
+                                  (clientes.activo = 1)
+                                order by 3,2"; 
+                                
+                $stmt = $this->mysql->getStmt($sqlClientes);
 
                 $stmt->execute();
                 $stmt->bind_result($codigo, $nombres, $apellido);
