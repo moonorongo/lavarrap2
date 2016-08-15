@@ -1,0 +1,14 @@
+<configuration xmlns="http://logging.apache.org/log4php/">
+    <appender name="mainAppender" class="LoggerAppenderRollingFile">
+        <layout class="LoggerLayoutPattern">
+            <param name="conversionPattern" value="%date %logger %-5level %file - en linea %line : %msg%n REQUEST: %request  - SESSION: %session %n" />
+        </layout>
+        <param name="file" value="script/log/lavarrap.log" />
+        <param name="maxFileSize" value="512KB" />
+        <param name="maxBackupIndex" value="10" />        
+    </appender>
+    <root>
+        <level value="WARN" />
+        <appender_ref ref="mainAppender" />
+    </root>
+</configuration>
