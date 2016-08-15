@@ -11,8 +11,6 @@
         }
         
 
-        // SELECT SUM(monto) as sumaCobrado FROM caja WHERE DATE(fecha) = DATE('2013-12-26')
-        
         public function cajaDiaria($fecha) {
             $sql = "SELECT SUM(monto) as sumaCobrado FROM caja WHERE DATE(fecha) = DATE('". $fecha 
                     ."') AND codigoSucursal = $this->codigoSucursal AND LEFT(observaciones, 5) <> '*EXT*'";
