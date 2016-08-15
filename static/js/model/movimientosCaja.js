@@ -146,12 +146,14 @@ CajaView = Backbone.View.extend({
     aceptar: function(e){
             e.preventDefault(); // corta la propagacion de eventos.
             var _this = this;
+            $(e.currentTarget).prop({disabled : true});
             
             validate.test(this.$el);
             
             var hasError = validate.getErrorCount(this.$el)
             
             if(hasError !== 0) {
+                $(e.currentTarget).prop({disabled : false});
                 var erroresEncontrados = validate.showErrors(this.$el);
                 wcat.jConfirm(erroresEncontrados, function(){
                     _this.saveModel(e);
