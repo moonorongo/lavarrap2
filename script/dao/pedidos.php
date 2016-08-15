@@ -9,31 +9,11 @@
             $this->codigoSucursal = $_SUCURSAL;
             $this->mysql = $mysql;
         }
-
-
-        
-        private function getNewId() {
-            $result = $this->mysql->query("SELECT codigo FROM pedidos ORDER BY codigo desc limit 1");
-            if($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                $out = $row["codigo"] + 1;
-                }
-            } else {
-                $out = 1;
-            }
-            return $out;
-        }
-        
-        
-
-        
         
         public function create($modelData) {
-        
-            $newId = $this->getNewId();
-            $sql = "INSERT INTO pedidos (codigo) VALUES ($newId)"; 
+            $sql = "INSERT INTO pedidos (nombre) VALUES (null)"; 
             $result = $this->mysql->query($sql);
-            $modelData["codigo"] = $newId;
+            $modelData["codigo"] = $this->mysql->getLastId();
             $this->update($modelData);
             
             return $modelData;
@@ -117,6 +97,7 @@
                 (SELECT count(codigoProveedor) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoProveedor is not null) AS _cantDerivaciones,
                 (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoEstado > 2)  AS _cantProcesado,
                 (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo)  AS _cantTotal,
+                
                 pr.prefijoCodigo, c.direccion 
                 FROM pedidos p 
                 INNER JOIN clientes c ON p.codigoCliente = c.codigo 
@@ -126,9 +107,10 @@
                       AND p.activo = 1 
                       AND p.nombre IS NULL 
                       AND $whereFechaPedido 
-                      AND YEAR(NOW()) = YEAR(p.fechaPedido) 
                 ORDER BY p.fechaRetiro DESC LIMIT 300";
 
+//AND YEAR(NOW()) = YEAR(p.fechaPedido) 
+                
             $out = Array();
             
             $stmt = $this->mysql->getStmt($sql);
