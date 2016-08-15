@@ -361,27 +361,17 @@ PedidosModificarView = Backbone.View.extend({
                 buttonImageOnly: true,
                 dateFormat: "dd/mm/yy"
         });
-        
-       
-        $.ajax({
-            url: 'clientes.php?action=getAllClientes',
-            data: {},
-            type: 'POST',
-            dataType: 'json',
-            success: function(response) {
-                _.each(response, function(e){
-                    _this.$("#codigoCliente").append('<option value="'+ e.id +'">'+ e.text +'</option>');
-                });
-                
-                $("#codigoCliente").chosen();
-                
-                if(!_this.model.isNew()) { 
-                    _this.$("#codigoCliente").val(_this.model.get("codigoCliente"));
-                    _this.$('#codigoCliente').trigger("chosen:updated");
-                }
-                
-            }
-        });
+
+        if (_this.model.isNew()) {
+            $("#searchCliente").autocomplete({
+              source: "clientes.php?action=getClientes&term=" + $("#searchCodigo").val(),
+              minLength: 3,
+              select: function( event, ui ) {
+                _this.$("#codigoCliente option").remove();
+                _this.$("#codigoCliente").append('<option value="'+ ui.item.id +'" selected>'+ ui.item.value +'</option>');
+              }
+            });
+        }
         
         this.serviciosPedidos = new ServiciosPedidos({
             collection : _this.model.get("listaServicios")
@@ -501,7 +491,7 @@ PedidosModificarView = Backbone.View.extend({
             _this.model.set({
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "imprimir" : imprimir,
-                "_nombreCliente" : _this.$('#codigoCliente option:selected').html(),
+                "_nombreCliente" : _this.$('#searchCliente').val(),
                 "observaciones" : _this.$('#observaciones').val(),
                 "anticipo" : (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val()
             }, {silent: true});
