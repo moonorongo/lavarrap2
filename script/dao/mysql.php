@@ -52,6 +52,9 @@
             $this->db->close();
         }
         
+        public function getLastId() {
+            return $this->db->insert_id;
+        }
         
     
     }
