@@ -147,14 +147,25 @@
         public function listByNombre($term = null) {
             $out = array();
             if($term != null) {
+                $aTerm = chop(' ', $term);
+                if(count($aTerm) > 1) {
+                    $nombres = $aTerm[0];
+                    $apellido = $aTerm[1];
+                } else {
+                    $nombres = $term;
+                    $apellido = $term;
+                }
                 
                 $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido FROM clientes WHERE 
-                    ((nombres LIKE ?) OR (apellido LIKE ?)) AND codigoSucursal = ". $this->codigoSucursal);
+                    ((REPLACE(nombres, ' ', '') LIKE ?) OR (REPLACE(apellido, ' ', '') LIKE ?)) AND codigoSucursal = ". $this->codigoSucursal);
 
-                $a = "%$term%";
-                $b = "%$term%";
+                $nombres = str_replace(' ', '', $nombres);
+                $apellido = str_replace(' ', '', $apellido);
+                $a = "%$nombres%";
+                $b = "%$apellido%";
 
                 $stmt->bind_param("ss",$a , $b);
+
                 $stmt->execute();
 
                 $stmt->bind_result($codigo, $nombres, $apellido);

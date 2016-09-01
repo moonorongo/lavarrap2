@@ -219,11 +219,10 @@ ClientesModificarView = Backbone.View.extend({
                        "codigoCliente" : response.id,
                        "_nombreCliente" : response.get("nombres") +' '+ response.get("apellido")
                    });
-                   
+                   main.pedidos.pedidosModificarView.$("#codigoCliente option").remove();
                    main.pedidos.pedidosModificarView.$('#codigoCliente').append('<option value="'+ response.id +'">'+ response.get("nombres") +' '+ response.get("apellido") +'</option>');
                    main.pedidos.pedidosModificarView.$('#codigoCliente').val(response.id);
-                   main.pedidos.pedidosModificarView.$('#codigoCliente').trigger("chosen:updated");
-                   
+                   main.pedidos.pedidosModificarView.$('#searchCliente').val(response.get("nombres") +' '+ response.get("apellido"));
                }
                wcat.waitDialog(true);
                _this.cancelar(e);

@@ -363,8 +363,11 @@ PedidosModificarView = Backbone.View.extend({
         });
 
         if (_this.model.isNew()) {
-            $("#searchCliente").autocomplete({
-              source: "clientes.php?action=getClientes&term=" + $("#searchCodigo").val(),
+            $("#searchCliente").keypress(function(e) {
+                if (e.keyCode == 13)
+                    e.preventDefault();
+            }).autocomplete({
+              source: "clientes.php?action=getClientes", 
               minLength: 3,
               select: function( event, ui ) {
                 _this.$("#codigoCliente option").remove();
