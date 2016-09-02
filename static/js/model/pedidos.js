@@ -367,12 +367,25 @@ PedidosModificarView = Backbone.View.extend({
                 if (e.keyCode == 13)
                     e.preventDefault();
             }).autocomplete({
-              source: "clientes.php?action=getClientes", 
               minLength: 3,
+              delay: 500,
               select: function( event, ui ) {
                 _this.$("#codigoCliente option").remove();
                 _this.$("#codigoCliente").append('<option value="'+ ui.item.id +'" selected>'+ ui.item.value +'</option>');
-              }
+              },
+            source: function( request, response ) {
+                $.ajax({
+                    url: "clientes.php?action=getClientes",
+                    data: { term: request.term},
+                    success: function(data){
+                        response(data);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("error handler!");                        
+                    },
+                  dataType: 'json'
+                });
+            }              
             });
         }
         
