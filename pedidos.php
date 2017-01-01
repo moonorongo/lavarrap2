@@ -3,11 +3,12 @@
     Pedidos Controller
 */    
     session_start();
+    require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/config.php");
+    
     if(!isset($_SESSION['LOGGED'])) { // si no esta logueado
         header('HTTP/1.0 401 Unauthorized');
         echo ('NO AUTORIZADO: click <a href="http://'. $_SERVER['SERVER_NAME'] .'">aqui</a> para entrar');
     } else { // si esta logueado
-        require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/config.php");
         header('Content-Type: application/json');
         
         $mysql = Mysql::getInstance();
@@ -29,14 +30,30 @@
         $clientes = new Clientes($mysql);
         
         // dataTables Handler
+/*        
         if($action == 'listAll') {
             $entregado = (isset($_REQUEST["entregado"]))? $_REQUEST["entregado"] : 0;
             $fechaPedido = (isset($_REQUEST["fechaPedido"]))? $_REQUEST["fechaPedido"] : "";
             $out = $pedidosService->listAll($entregado, $fechaPedido);
             echo json_encode($out);
         }
+*/        
         
 
+        // dataTables Handler
+        if(isset($_REQUEST["sEcho"])) {
+            $entregado = (isset($_REQUEST["entregado"]))? $_REQUEST["entregado"] : 0;
+            $fechaPedido = (isset($_REQUEST["fechaPedido"]))? $_REQUEST["fechaPedido"] : "";
+            $out = $pedidosService->getPagedSorted($_REQUEST["sSearch"],
+                                        $_REQUEST["iDisplayStart"],
+                                        $_REQUEST["iDisplayLength"],
+                                        $_REQUEST["sEcho"], 
+                                        $entregado, $fechaPedido);
+            
+            echo json_encode($out);
+        }
+
+        
 
         // dummy para mantener la conexion
         if($action == 'dummy') {

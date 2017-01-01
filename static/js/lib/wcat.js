@@ -94,6 +94,7 @@ var
  * opcional:
  *      aoColumnDefs: si se proporciona sobreescribe el calculo que hace getDatatable
  *      callback: llamado al finalizar la inicializacion
+ * retorna: la referencia al DT
   */        
         dtWrapper : function(sAjaxSource, idContainer, view, aoColumnDefs, callback) {
             
@@ -168,14 +169,23 @@ var
             // a medida q se necesiten mas parametros, agregarlos de la misma manera.
             DTConfig.fnServerParams = function ( aoData ) {
                 var fechaVigencia = $('#fechaVigencia').val();
-                if(!_.isUndefined(fechaVigencia)) {
+                if(!_.isUndefined(fechaVigencia)) 
                     aoData.push( { "name": "fechaVigencia", "value": fechaVigencia} );
-                };
+
+/*  esta basura no se utiliza...              
+                var entregado = ($('#verEntregado').prop('checked'))? 1:0;
+                if(!_.isUndefined(entregado)) 
+                    aoData.push( { "name": "entregado", "value": entregado } );
+                
+                
+                var fechaPedido = $('#fechaPedidos').val();
+                if(fechaPedido != "" && !_.isUndefined(fechaPedido)) 
+                    aoData.push( { "name": "fechaPedido", "value": wcat.swapDateFormat(fechaPedido)} );
+  */              
             }
             
             
-            view.oTable = $('#'+ idContainer,view.el).dataTable(DTConfig).fnSetFilteringDelay();
-
+            return view.oTable = $('#'+ idContainer,view.el).dataTable(DTConfig).fnSetFilteringDelay();
         }, // end getDatatable
 
         

@@ -1,11 +1,18 @@
 <?php
+    require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php/Logger.php");
+    Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
+
     class Pedidos {
         
         private $mysql = null;
+        private $columns = Array("p.codigo", "c.nombres","c.apellido");
         private $codigoSucursal = null;
+        private $log = null;
+
                 
         function __construct($mysql) {
             global $_SUCURSAL;
+            $this->log = Logger::getLogger('rootLogger');
             $this->codigoSucursal = $_SUCURSAL;
             $this->mysql = $mysql;
         }
@@ -84,7 +91,7 @@
 
         
         
-
+/*
         public function listAll($entregado, $fechaPedido) {
             
             if($entregado == 0) {
@@ -137,9 +144,117 @@
             $stmt -> close();
             return $out;
         }        
-    
+  */  
 
-        
+        public function count($entregado, $fechaPedido, $sSearch) {
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
+            
+            if($entregado == 0) {
+                $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaPedido) = '$fechaPedido') " : " (1 = 1) ";
+            } else {
+                $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaRetiro) = '$fechaPedido') " : " (1 = 1) ";
+            }
+
+            $sql = 
+                "SELECT 
+                   count(p.codigo) AS total
+                FROM  pedidos p 
+                INNER JOIN clientes c ON p.codigoCliente = c.codigo 
+                WHERE 
+                 (p.codigoSucursal = $this->codigoSucursal)
+                 AND (p.entregado = $entregado)
+                 AND $whereFechaPedido 
+                 AND $aBuscar 
+                 AND (p.activo = 1)
+                 AND (p.nombre IS NULL)";
+            
+            $result = $this->mysql->query($sql);
+            
+            if ($row = $result->fetch_assoc()) {
+                $out = $row["total"];
+            }
+            return $out;
+        }
+
+
+        public function getPagedSorted($sSearch, $start, $length, $entregado, $fechaPedido) {
+
+            if($entregado == 0) {
+                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaPedido) = '$fechaPedido' " : " true ";
+            } else {
+                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaRetiro) = '$fechaPedido' " : " true ";
+            }
+
+            $sSearch = strtoupper($sSearch);
+            // Armo query busqueda en base a configuracion columns
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
+       
+            $out = Array();
+            
+            $sql =  "SELECT 
+                        p.codigo, p.fechaPedido, c.nombres, c.apellido, c.telefono, p.fechaRetiro, 
+                        (SELECT count(codigoProveedor) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoProveedor is not null) AS _cantDerivaciones,
+                        (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoEstado > 2)  AS _cantProcesado,
+                        (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo)  AS _cantTotal,
+                        pr.prefijoCodigo, c.direccion 
+                    FROM  pedidos p 
+                    INNER JOIN clientes c ON p.codigoCliente = c.codigo 
+                    INNER JOIN proveedores pr ON p.codigoSucursal = pr.codigo
+                    WHERE 
+                      p.codigoSucursal = $this->codigoSucursal 
+                      AND p.entregado = $entregado 
+                      AND p.activo = 1 
+                      AND p.nombre IS NULL 
+                      AND $whereFechaPedido
+                      AND $aBuscar 
+                    ORDER BY p.fechaPedido DESC, 
+                             p.CODIGO DESC 
+                    LIMIT $start, $length";
+
+//            $this->log->warn($sql);
+                    
+            $stmt = $this->mysql->getStmt($sql);
+            $stmt -> execute();
+            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion);
+            
+
+            while($stmt -> fetch()) {
+                $tmpRow = array("codigo" => $codigo,
+                           "fechaPedido" => explode(" ", $fechaPedido),
+                           "nombres" => $nombres,
+                           "apellido" => $apellido,
+                           "telefono" => $telefono,
+                           "fechaRetiro" => $fechaRetiro,
+                           "_cantDerivaciones" => $_cantDerivaciones,
+                           "_cantProcesado" => $_cantProcesado,
+                           "_cantTotal" => $_cantTotal,
+                           "prefijoCodigo" => $prefijoCodigo,
+                            "direccion" => $direccion
+                          );
+                $out[] = $tmpRow;
+            }
+            
+            $stmt -> close();
+            return $out;
+        }
+
+
+
+    
         
         
         

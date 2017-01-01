@@ -30,6 +30,58 @@
             echo json_encode($out);
         }
 
+        if($action == 'printTicketHandler') {
+            $montoPagado = floatval($_REQUEST["montoPagado"]);
+            $vuelto = floatval($_REQUEST["vuelto"]);
+            
+            $pedidos = new Pedidos($mysql);
+            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
+            
+            $clientes = new Clientes($mysql);
+            $modelCliente = $clientes->get($pedidoModel["codigoCliente"]);
+
+            $listaTareas = $serviciosPedidos->getByCodigoPedido($_REQUEST["codigoPedido"]);
+            $tareasSeleccionadas = Array();
+            
+            forEach($listaTareas as $tarea) {
+                $tareasSeleccionadas[] = $tarea["codigo"];
+            }
+
+            $data = $tareasService->get($tareasSeleccionadas);
+            $ticket = new Ticket("P","mm",array(105,148));
+            $ticket->modelCliente = $modelCliente;
+            $ticket->direccion = $proveedorData['direccion'];
+            $ticket->zona = $proveedorData['zona'];
+            $ticket->telefono = $proveedorData['telefono'];
+            $ticket->soloControl = false;
+            $ticket->anticipo = $pedidoModel["anticipo"];
+            $ticket->codigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
+            $ticket->AddPage();
+            $ticket->ListTareas($data, $montoPagado);
+            $ticket->Output("entrega_". $ticket->codigo .".pdf",'I');                            
+        } // end printTicketHandler
+
+        
+        if($action == 'printRemitoHandler') {
+            $listaTareas = $serviciosPedidos->getByCodigoPedido($_REQUEST["codigoPedido"]);
+            $tareasSeleccionadas = Array();
+            forEach($listaTareas as $tarea) {
+                $tareasSeleccionadas[] = $tarea["codigo"];
+            }
+
+            // genero ticket
+            $data = $tareasService->get($tareasSeleccionadas);
+            $ticket = new Ticket("P","mm",array(105,148));
+            $ticket->direccion = $proveedorData['direccion'];
+            $ticket->zona = $proveedorData['zona'];
+            $ticket->telefono = $proveedorData['telefono'];
+            $ticket->codigo = Date('d/m/Y');
+            $ticket->AddPage();
+            $ticket->ListTareasRemito($data, 0);
+            $ticket->Output("remito_". $ticket->codigo .".pdf",'I');
+        } // end printRemitoHandler
+        
+        
         if($action == 'tareasHandler') {
             $codigoEstado = $_REQUEST["codigoEstado"];
             
@@ -71,6 +123,10 @@
                             $montoPagado = floatval($_REQUEST["montoPagado"]);
                             $vuelto = floatval($_REQUEST["vuelto"]);
 
+                            // aca: detectar si el pedido esta finalizado... si lo esta, entonces que no haga nada
+                            // testear esto un poco mas
+                            
+                            
                             // marco finalizado
                             $pedidos = new Pedidos($mysql);
                             $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
@@ -89,34 +145,25 @@
                             
                             $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado);
                             
-                            // genero ticket
                             $data = $tareasService->get($tareasSeleccionadas);
-                            $ticket = new Ticket("P","mm",array(105,148));
-                            $ticket->modelCliente = $modelCliente;
-                            $ticket->direccion = $proveedorData['direccion'];
-                            $ticket->zona = $proveedorData['zona'];
-                            $ticket->telefono = $proveedorData['telefono'];
-                            $ticket->soloControl = false;
-                            $ticket->anticipo = $pedidoModel["anticipo"];
-                            $ticket->codigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
-                            $ticket->AddPage();
-                            $ticket->ListTareas($data, $montoPagado);
-                            $ticket->Output("entrega_". $ticket->codigo .".pdf",'I');
+                            $ticketCodigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
                             
                             // registro el movimiento en caja
-                            
                             $caja = new Caja($mysql);
                             if($montoPagado != 0) { 
-                                $caja->registrarIngreso($montoPagado,"Monto pagado operacion ". $ticket->codigo);
+                                $caja->registrarIngreso($montoPagado,"Monto pagado operacion ". $ticketCodigo);
                             }
+                            
                             if($vuelto != 0) {
-                                $caja->registrarEgreso($vuelto,"Vuelto entregado operacion ". $ticket->codigo);
+                                $caja->registrarEgreso($vuelto,"Vuelto entregado operacion ". $ticketCodigo);
                             }
-                            
-                            
+
                             break;
                 case "5" :  // a cuenta Corriente
                             // cambio estado tarea a Entregado
+                            
+                            // aca: detectar si el pedido esta finalizado... si lo esta, entonces que no haga nada
+
                             $sumatoriaCobrar = 0;
                             $listaTareas = $serviciosPedidos->getByCodigoPedido($_REQUEST["codigoPedido"]);
                             $tareasSeleccionadas = Array();
@@ -130,7 +177,7 @@
                             // marco finalizado 
                             $pedidos = new Pedidos($mysql);
                             $pedidos->entregar($_REQUEST["codigoPedido"]); 
-                            
+
                             
                             // cargo $sumatoriaCobrar en cuentaCorriente del cliente
                             $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
@@ -138,25 +185,14 @@
                             $cuentaCorriente->create( Array("codigoCliente" => $pedidoModel["codigoCliente"], 
                                                         "codigoPedido" => $_REQUEST["codigoPedido"], 
                                                         "monto" => $sumatoriaCobrar) );
-                            
-                            // genero ticket
-                            $data = $tareasService->get($tareasSeleccionadas);
-                            $ticket = new Ticket("P","mm",array(105,148));
-                            $ticket->direccion = $proveedorData['direccion'];
-                            $ticket->zona = $proveedorData['zona'];
-                            $ticket->telefono = $proveedorData['telefono'];
-                            //$ticket->codigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
-                            $ticket->codigo = Date('d/m/Y');
-                            $ticket->AddPage();
-                            $ticket->ListTareasRemito($data, 0);
-                            $ticket->Output("remito_". $ticket->codigo .".pdf",'I');
-                            
+                                                        
                             break;
             } // switch
             
             echo '{ "success" : true}';
-        }
-
+        } // end tareasHandler
+        
+        
         $mysql->close();    
     } // if logged    
 ?>

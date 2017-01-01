@@ -224,9 +224,38 @@ Pedidos = Backbone.View.extend({
             var DTConfig = _.clone(wcat.getDataTableDefaults());
             var _this = this;
             
+            var idContainer = 'datatable';
+/*            
+            var aoColumnDefs = [];
+            $('#'+ idContainer +' thead tr th').each(function(i,e){
+                var aTargets = [i];
+                aoColumnDefs.push({
+                    "sClass" : $(e).css('textAlign'),
+                    "aTargets" : aTargets,
+                    "sWidth" : $(e).css('width')
+                })
+            });
 
-            DTConfig.sAjaxSource = 'pedidos.php?action=listAll';
-            DTConfig.bServerSide = false;
+            var _DT = wcat.dtWrapper(
+                'pedidos.php',
+                idContainer,
+                this,
+                aoColumnDefs
+            );          
+            
+            DTConfig.fnServerParams = function ( aoData ) {
+                var entregado = ($('#verEntregado').prop('checked'))? 1:0;
+                var fechaPedido = $('#fechaPedidos').val();
+                aoData.push( { "name": "entregado", "value": entregado } );
+                if(fechaPedido != "" && !_.isUndefined(fechaPedido)) aoData.push( { "name": "fechaPedido", "value": wcat.swapDateFormat(fechaPedido)} );
+            }
+*/            
+            
+            
+
+            DTConfig.sAjaxSource = 'pedidos.php';
+//            DTConfig.bServerSide = true;
+            DTConfig.bSort = false;
 
             var idContainer = 'datatable';
 
@@ -294,6 +323,7 @@ Pedidos = Backbone.View.extend({
             } // end fnRowCallback
 
             _this.oTable = $('#'+ idContainer,_this.el).dataTable(DTConfig).fnSetFilteringDelay();
+            
         } // end initDT
 });
 
@@ -639,14 +669,21 @@ EntregarPedidoView = Backbone.View.extend({
                     vuelto : _this.model.get("vuelto")
                 };
 
-                window.open("tareas.php?action=tareasHandler&"+ $.param(data), "Imprimir Entrega pedido",
-                            "directories=0, height=600, location=0, menubar=0, width=500");                        
-
-                setTimeout(function(){
+                $.ajax({
+                    url: 'tareas.php?action=tareasHandler',
+                    data : data,
+                    error : function(response) {
+                        console.log(response);
+                    },
+                    success : function(response) {
+                        _this.cancelar();                            
                         main.pedidos.oTable.fnReloadAjax();
                         main.pedidos.lastRowSelected = null;
-                        _this.cancelar();
-                }, 2000);
+                        
+                        window.open("tareas.php?action=printTicketHandler&"+ $.param(data), "Imprimir Entrega pedido",
+                            "directories=0, height=600, location=0, menubar=0, width=500");
+                    } 
+                }); // ajax
             } 
         } else { // a cuenta corriente
             
@@ -655,18 +692,22 @@ EntregarPedidoView = Backbone.View.extend({
                 codigoEstado : 5
             };
             
-            window.open("tareas.php?action=tareasHandler&"+ $.param(data), "Imprimir Remito",
-                        "directories=0, height=600, location=0, menubar=0, width=500");                        
-
-            setTimeout(function(){
+            $.ajax({
+                url: 'tareas.php?action=tareasHandler',
+                data : data,
+                error : function(response) {
+                    console.log(response);
+                },
+                success : function(response) {
+                    _this.cancelar();
                     main.pedidos.oTable.fnReloadAjax();
                     main.pedidos.lastRowSelected = null;
-                    _this.cancelar();
-            }, 2000);            
-            
-
+                    
+                    window.open("tareas.php?action=printRemitoHandler&"+ $.param(data), "Imprimir Remito",
+                                "directories=0, height=600, location=0, menubar=0, width=500");                        
+                } 
+            }); // ajax            
         }
-
 
     },
     
