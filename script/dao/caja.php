@@ -12,8 +12,11 @@
         
 
         public function cajaDiaria($fecha) {
-            $sql = "SELECT SUM(monto) as sumaCobrado FROM caja WHERE DATE(fecha) = DATE('". $fecha 
-                    ."') AND codigoSucursal = $this->codigoSucursal AND LEFT(observaciones, 5) <> '*EXT*'";
+            $sql =  "SELECT SUM(monto) as sumaCobrado 
+                     FROM caja WHERE DATE(fecha) = DATE('$fecha') AND 
+                     codigoSucursal = $this->codigoSucursal AND 
+                     esSaldoInicialMes = 0 AND
+                     LEFT(observaciones, 5) <> '*EXT*'";
             
             $result = $this->mysql->query($sql);
             if($row = $result->fetch_assoc()) {
@@ -23,6 +26,26 @@
             }
         }
         
+
+
+        public function listMovimientosVentas($mes, $anio) {
+            $sql = "SELECT monto, observaciones, cast(fecha as date) as fecha
+                      FROM caja 
+                      WHERE
+                      ( (MONTH(fecha) = $mes) AND (YEAR(fecha) = $anio) ) AND
+                      (codigoSucursal = $this->codigoSucursal) AND
+                      (LEFT(observaciones, 5) <> '*EXT*') AND
+                      (esSaldoInicialMes = 0) 
+                      ORDER BY fecha";
+
+            $out = array();
+            $result = $this->mysql->query($sql);
+            while($row = $result->fetch_assoc()) {
+                $out[] = $row;
+            }
+            return $out;
+
+        }
         
         
         

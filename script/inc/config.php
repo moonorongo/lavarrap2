@@ -4,7 +4,7 @@
     $defaults_database = Array("database" => "lavarrap", 
                             "url" => "localhost", 
                             "username" => "root", 
-                            "password" => "");
+                            "password" => "123456");
 
                  
     function isAdmin() {

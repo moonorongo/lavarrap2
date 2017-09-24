@@ -25,6 +25,7 @@ Main = Backbone.View.extend({
         "click #movimientosCaja" : "movimientosCaja",
         
         "click #rPrincipal" : "rPrincipal",
+        "click #cajaFacturado" : "cajaFacturado",
         "click #rInsumos" : "reportes",
         "click #rDerivaciones" : "reportes",
         "click #rServiciosRealizados" : "reportes",
@@ -57,6 +58,18 @@ Main = Backbone.View.extend({
                 var month = $('#month').val();
                 var year = $('#year').val();
                 window.location = "reportes.php?action=rPrincipal&fechaInicial="+ month +"&fechaFinal="+ year                
+            }, null, {title : "Reporte", width: 410, height: 150 }); // jConfirm        
+    },
+
+    cajaFacturado : function() {
+        this.closeAll();
+        wcat.jConfirm('Mes: <input type="text" id="month" class="datepickerReporte" value="'+ moment().format("MM") +'" />' +
+                      '<span style="display: inline-block; margin-left: 31px">A&ntilde;o:</span>'+
+                      '<input type="text" id="year" class="datepickerReporte" value="'+ moment().format("YYYY") +'" />', 
+            function(){
+                var month = $('#month').val();
+                var year = $('#year').val();
+                window.location = "reportes.php?action=cajaFacturado&fechaInicial="+ month +"&fechaFinal="+ year                
             }, null, {title : "Reporte", width: 410, height: 150 }); // jConfirm        
     },
             

@@ -31,6 +31,7 @@
                     <li><a id="reportes">Reportes <i class="icon-angle-down"></i></a>
                         <ul>
                             <li><a id="rPrincipal">Principal</a></li>
+                            <li><a id="cajaFacturado">Caja contra Facturado</a></li>
                             <li><a id="rInsumos">Insumos I/C</a></li>
                             <li><a id="rDerivaciones">Derivaciones</a></li>
                             <li><a id="rServiciosRealizados">Cant. Servicios</a></li>

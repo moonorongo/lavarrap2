@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/!svn/ver/1463/laverrap/static/css/datatables
+END
+demo_page.css
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/1402/laverrap/static/css/datatables/demo_page.css
+END
+jquery.dataTables.css
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/!svn/ver/1402/laverrap/static/css/datatables/jquery.dataTables.css
+END
+demo_table_jui.css
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/1463/laverrap/static/css/datatables/demo_table_jui.css
+END
+demo_table.css
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/!svn/ver/1402/laverrap/static/css/datatables/demo_table.css
+END
+jquery.dataTables_themeroller.css
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/!svn/ver/1402/laverrap/static/css/datatables/jquery.dataTables_themeroller.css
+END

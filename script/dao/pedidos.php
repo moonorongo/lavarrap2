@@ -301,7 +301,35 @@
         
         
 
-        
+        function getMontoPedido($codigo) {
+            $stmt = $this->mysql->getStmt("
+              SELECT 
+                sum(servicios.valor *  serviciosPedidos.cantidad) as facturado,
+                cast(pedidos.fechaPedido as date) as fechaPedido,
+                concat(clientes.nombres,' ',clientes.apellido) as nombreApellido
+                
+              FROM serviciosPedidos
+                INNER JOIN servicios ON serviciosPedidos.codigoServicio = servicios.codigo
+                INNER JOIN pedidos ON serviciosPedidos.codigoPedido = pedidos.codigo
+                INNER JOIN clientes ON pedidos.codigoCliente = clientes.codigo
+              WHERE 
+                  serviciosPedidos.codigoPedido = ?
+              GROUP BY 
+                clientes.nombres, clientes.apellido, pedidos.fechaPedido");
+            
+            $stmt->bind_param("i", $codigo);
+            $stmt->execute();
+            $stmt->bind_result($facturado, $fechaPedido, $nombreApellido);
+            
+            $stmt->fetch();
+            
+            $stmt -> close();
+            return array(
+              'facturado' => $facturado,
+              'fechaPedido' => $fechaPedido,
+              'nombreApellido' => $nombreApellido
+            );
+        }
 
         
         
