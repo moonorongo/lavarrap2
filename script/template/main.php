@@ -1,5 +1,4 @@
 <script type="text/template" id="mainAppTemplate">
-
     <div class="menuBar">
         <div id="mainWrapper" class="centered">
             <div id="logo">
@@ -28,40 +27,40 @@
             <div id="menu" class="menu">
                 <ul>
                 <?php if(isAdmin()) { ?>                    
-                    <li><a id="reportes">Reportes <i class="icon-angle-down"></i></a>
+                    <li class="root-menu"><a id="reportes">Reportes <i class="icon-angle-down"></i></a>
                         <ul>
-                            <li><a id="rPrincipal">Principal</a></li>
-                            <li><a id="cajaFacturado">Caja contra Facturado</a></li>
-                            <li><a id="rInsumos">Insumos I/C</a></li>
-                            <li><a id="rDerivaciones">Derivaciones</a></li>
-                            <li><a id="rServiciosRealizados">Cant. Servicios</a></li>
-                            <li><a id="rListaServicios">Lista servicios</a></li>
+                            <li><a id="rPrincipal" class="menu-item">Principal</a></li>
+                            <li><a id="cajaFacturado" class="menu-item">Caja contra Facturado</a></li>
+                            <li><a id="rInsumos" class="menu-item">Insumos I/C</a></li>
+                            <li><a id="rDerivaciones" class="menu-item">Derivaciones</a></li>
+                            <li><a id="rServiciosRealizados" class="menu-item">Cant. Servicios</a></li>
+                            <li><a id="rListaServicios" class="menu-item">Lista servicios</a></li>
                         </ul>
                     </li>
-                    <li><a id="configuracion">Configuraci&oacute;n <i class="icon-angle-down"></i></a> 
+                    <li class="root-menu"><a id="configuracion">Configuraci&oacute;n <i class="icon-angle-down"></i></a> 
                         <ul>
-                            <li><a id="servicios">Servicios</a></li>
-                            <li><a id="proveedores">Proveedores</a></li>
-                            <li><a id="insumos">Insumos</a></li>
+                            <li><a id="servicios" class="menu-item">Servicios</a></li>
+                            <li><a id="proveedores" class="menu-item">Proveedores</a></li>
+                            <li><a id="insumos" class="menu-item">Insumos</a></li>
                             <li><a>Caja <i class="icon-angle-right"></i></a>
                                 <ul>
-                                    <li><a id="ingresoCaja">Registrar ingreso</a></li>
-                                    <li><a id="egresoCaja">Registrar egreso</a></li>
-                                    <li><a id="cerrarCajaMes">Cerrar Caja Mes</a></li> 
-                                    <li><a id="movimientosCaja">Movimientos de Caja</a></li>
+                                    <li><a id="ingresoCaja" class="menu-item">Registrar ingreso</a></li>
+                                    <li><a id="egresoCaja" class="menu-item">Registrar egreso</a></li>
+                                    <li><a id="cerrarCajaMes" class="menu-item">Cerrar Caja Mes</a></li> 
+                                    <li><a id="movimientosCaja" class="menu-item">Movimientos de Caja</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                 <?php } ?>    
-                    <li><a id="pedidos">Pedidos</a></li>
-                    <li><a id="tareas">Tareas</a></li>
-                    <li><a id="clientes">Clientes <i class="icon-angle-down"></i></a>
+                    <li class="root-menu"><a id="pedidos"  class="menu-item">Pedidos</a></li>
+                    <li class="root-menu"><a id="tareas" class="menu-item">Tareas</a></li>
+                    <li class="root-menu"><a id="clientes" class="menu-item">Clientes <i class="icon-angle-down"></i></a>
                         <ul>
-                            <li><a id="cuentaCorriente">Cuenta corriente</a></li>
-                            <li><a id="rCumpleanos">Cumplea&ntilde;os</a></li>
-                            <li><a id="rConsumos">Consumos</a></li>
-                            <li><a id="exportarListaClientes">Exportar</a></li>
+                            <li><a id="cuentaCorriente" class="menu-item">Cuenta corriente</a></li>
+                            <li><a id="rCumpleanos" class="menu-item">Cumplea&ntilde;os</a></li>
+                            <li><a id="rConsumos" class="menu-item">Consumos</a></li>
+                            <li><a id="exportarListaClientes" class="menu-item">Exportar</a></li>
                         </ul>
                     </li>                    
                     <li><a id="salir" href="logout.php">Salir</a></li>

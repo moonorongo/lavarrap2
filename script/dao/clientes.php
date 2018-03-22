@@ -157,7 +157,9 @@
                 }
                 
                 $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido FROM clientes WHERE 
-                    ((REPLACE(nombres, ' ', '') LIKE ?) OR (REPLACE(apellido, ' ', '') LIKE ?)) AND codigoSucursal = ". $this->codigoSucursal);
+                    ((REPLACE(nombres, ' ', '') LIKE ?) OR (REPLACE(apellido, ' ', '') LIKE ?)) 
+                    AND activo = 1
+                    AND codigoSucursal = ". $this->codigoSucursal);
 
                 $nombres = str_replace(' ', '', $nombres);
                 $apellido = str_replace(' ', '', $apellido);

@@ -8,10 +8,19 @@
         <?php } ?>
         
         <button class="ABMButton enableDisable" id="entregar" style="margin-left: 20px;">Entregar</button>
+
         <?php if(isAdmin()) { ?>
-            <input type="checkbox" id="verEntregado" /> Entregados
-            <input type="text" id="fechaPedidos" style="width: 70px;" />
-            <button class="ABMButton" id="reset" style="padding: 3px 5px;font-size: 14px;margin-left: 8px;"><i class="icon-refresh"></i></button>
+            <select id="filtroDt">
+                <option value="0">Sin Entregar</option>
+                <option value="1">Entregados</option>
+                <option value="2">Plantillas</option>
+            </select>
+
+            <input type="text" id="fechaPedidos" style="width: 70px;" class="filtroFecha" />
+            <button class="ABMButton filtroFecha" id="reset" style="padding: 3px 5px;font-size: 14px;margin-left: 8px;"><i class="icon-refresh"></i></button>
+
+
         <?php } ?>
     </div>
+
 </script>

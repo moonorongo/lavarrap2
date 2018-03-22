@@ -30,25 +30,22 @@
         $clientes = new Clientes($mysql);
         
         // dataTables Handler
-/*        
-        if($action == 'listAll') {
-            $entregado = (isset($_REQUEST["entregado"]))? $_REQUEST["entregado"] : 0;
-            $fechaPedido = (isset($_REQUEST["fechaPedido"]))? $_REQUEST["fechaPedido"] : "";
-            $out = $pedidosService->listAll($entregado, $fechaPedido);
-            echo json_encode($out);
-        }
-*/        
-        
-
-        // dataTables Handler
         if(isset($_REQUEST["sEcho"])) {
-            $entregado = (isset($_REQUEST["entregado"]))? $_REQUEST["entregado"] : 0;
-            $fechaPedido = (isset($_REQUEST["fechaPedido"]))? $_REQUEST["fechaPedido"] : "";
-            $out = $pedidosService->getPagedSorted($_REQUEST["sSearch"],
-                                        $_REQUEST["iDisplayStart"],
-                                        $_REQUEST["iDisplayLength"],
-                                        $_REQUEST["sEcho"], 
-                                        $entregado, $fechaPedido);
+            $entregado = (isset($_REQUEST["entregado"]) && !empty($_REQUEST["entregado"]))? $_REQUEST["entregado"] : 0;
+
+            if($entregado != 2) {
+                $fechaPedido = (isset($_REQUEST["fechaPedido"]))? $_REQUEST["fechaPedido"] : "";
+                $out = $pedidosService->getPagedSorted($_REQUEST["sSearch"],
+                                            $_REQUEST["iDisplayStart"],
+                                            $_REQUEST["iDisplayLength"],
+                                            $_REQUEST["sEcho"], 
+                                            $entregado, $fechaPedido);
+            } else {
+                $out = $pedidosService->getPagedSortedTemplates($_REQUEST["sSearch"],
+                                            $_REQUEST["iDisplayStart"],
+                                            $_REQUEST["iDisplayLength"],
+                                            $_REQUEST["sEcho"]);
+            }
             
             echo json_encode($out);
         }
@@ -88,7 +85,10 @@
                     $anticipo = floatval($modelData['anticipo']);
                     if($anticipo != 0) {
                         $caja = new Caja($mysql);
-                        $caja->registrarIngreso($anticipo,"Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
+                        $caja->registrarCajaPedido(
+                            $anticipo, 
+                            $modelData['codigo'], 
+                            "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
                     }
                 }
                 
@@ -125,19 +125,30 @@
             if ( ($_method != null) && (($_method=="PUT")) && ($model != null) && ($codigo != null) ) {
                 $modelData = json_decode($model, true);
                 $oldModelData = $pedidosService->get($modelData["codigo"]);
-                $pedidosService->update($modelData);
 
-                if($oldModelData["anticipo"] == 0) { // si anteriormente no registro anticipo
-                    if($modelData["nombre"] == "") { // y no es plantilla
+                if(!$modelData['soloImprimir']) {
+                    $pedidosService->update($modelData);
+
+                    if($modelData["nombre"] == "") { // si no es plantilla
                         $anticipo = floatval($modelData['anticipo']);
-                        if($anticipo != 0) { // si hay anticipo, entonces lo registro
+                        $diferenciaRegistrar = $anticipo - $oldModelData["anticipo"];
+
+                        if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
                             $caja = new Caja($mysql);
-                            $caja->registrarIngreso($anticipo,"Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
+                            $caja->registrarCajaPedido(
+                                $diferenciaRegistrar, 
+                                $modelData['codigo'], 
+                                "Correccion anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
                         }
                     }
+                } else {
+                    $oldModelData['imprimir'] = $modelData['imprimir'];
+                    $oldModelData['soloImprimir'] = $modelData['soloImprimir'];
+                    $modelData = $oldModelData;
                 }
+
                 
-                if ($modelData['imprimir']) {
+                if ($modelData['imprimir'] || $modelData['soloImprimir']) {
                     $clientesData = $clientes->get($modelData["codigoCliente"]);
                     if(count($modelData['listaServicios']) == 0) { // si no tiene lista de servicios
                         $ticket = new Ticket("P","mm",array(105,148));

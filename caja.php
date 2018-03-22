@@ -59,6 +59,11 @@
                 echo '{ "success" : '. $success .'}';
             }    
 
+
+            if($action == 'fixPedidosCaja') {
+                require_once($_SERVER["DOCUMENT_ROOT"] ."/script/includes/caja/pedidos_caja.php");
+            }
+
             
             $mysql->close();                
         } else  {

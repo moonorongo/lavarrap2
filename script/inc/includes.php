@@ -15,6 +15,7 @@
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/dao/serviciosPedidos.php");
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/dao/caja.php");
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/dao/reportes.php");
+    require_once($_SERVER["DOCUMENT_ROOT"] ."/script/dao/pedidosCaja.php");
     
     
 // Services    

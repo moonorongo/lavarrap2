@@ -9,6 +9,9 @@
     } else { // si esta logueado
         require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/config.php");
         header('Content-Type: application/json');
+
+        Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
+        $logger = Logger::getLogger('rootLogger');
     
         global $_SUCURSAL;    
         
@@ -119,17 +122,21 @@
                             $tareasSeleccionadas = explode(',', $_REQUEST["tareasSeleccionadas"]);
                             $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado);
                             break;
+
                 case "4" :  // entrego pedido
+                            $pedidos = new Pedidos($mysql);
+                            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
+
+                            if($pedidoModel['entregado'] == 1) {
+                                $logger->warn('Se intento re-entregar el pedido '. $pedidoModel['codigo']);
+                                echo '{ "success" : true}';
+                                die();
+                            }
+
                             $montoPagado = floatval($_REQUEST["montoPagado"]);
                             $vuelto = floatval($_REQUEST["vuelto"]);
 
-                            // aca: detectar si el pedido esta finalizado... si lo esta, entonces que no haga nada
-                            // testear esto un poco mas
-                            
-                            
                             // marco finalizado
-                            $pedidos = new Pedidos($mysql);
-                            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
                             $pedidos->entregar($_REQUEST["codigoPedido"]);
 
                             $clientes = new Clientes($mysql);
@@ -143,26 +150,42 @@
                                 $tareasSeleccionadas[] = $tarea["codigo"];
                             }
                             
-                            $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado);
+                            $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado); // 4
                             
                             $data = $tareasService->get($tareasSeleccionadas);
                             $ticketCodigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
                             
                             // registro el movimiento en caja
                             $caja = new Caja($mysql);
+
                             if($montoPagado != 0) { 
-                                $caja->registrarIngreso($montoPagado,"Monto pagado operacion ". $ticketCodigo);
+                                // $caja->registrarIngreso($montoPagado,"Monto pagado operacion ". $ticketCodigo);
+                                $caja->registrarCajaPedido(
+                                    $montoPagado, 
+                                    $pedidoModel['codigo'], 
+                                    "Monto pagado operacion ". $ticketCodigo);
                             }
                             
                             if($vuelto != 0) {
-                                $caja->registrarEgreso($vuelto,"Vuelto entregado operacion ". $ticketCodigo);
+                                // $caja->registrarEgreso($vuelto,"Vuelto entregado operacion ". $ticketCodigo);
+                                $caja->registrarCajaPedido(
+                                    -abs($vuelto), 
+                                    $pedidoModel['codigo'], 
+                                    "Vuelto entregado operacion ". $ticketCodigo);
                             }
 
                             break;
                 case "5" :  // a cuenta Corriente
                             // cambio estado tarea a Entregado
                             
-                            // aca: detectar si el pedido esta finalizado... si lo esta, entonces que no haga nada
+                            $pedidos = new Pedidos($mysql);
+                            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
+
+                            if($pedidoModel['entregado'] == 1) {
+                                $logger->warn('Se intento re-entregar A CUENTA CORRIENTE el pedido '. $pedidoModel['codigo']);
+                                echo '{ "success" : true}';
+                                die();
+                            }
 
                             $sumatoriaCobrar = 0;
                             $listaTareas = $serviciosPedidos->getByCodigoPedido($_REQUEST["codigoPedido"]);
@@ -175,12 +198,9 @@
                             $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado);            
                             
                             // marco finalizado 
-                            $pedidos = new Pedidos($mysql);
                             $pedidos->entregar($_REQUEST["codigoPedido"]); 
 
-                            
                             // cargo $sumatoriaCobrar en cuentaCorriente del cliente
-                            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
                             $cuentaCorriente = new CuentaCorriente($mysql);
                             $cuentaCorriente->create( Array("codigoCliente" => $pedidoModel["codigoCliente"], 
                                                         "codigoPedido" => $_REQUEST["codigoPedido"], 

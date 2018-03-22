@@ -36,12 +36,21 @@ Main = Backbone.View.extend({
         "click #rConsumos" : "reportes",
         "click #exportarListaClientes" : "reportes",
         
+        "click .menu-item" : "highlightParent",
         
         "click #cambiarSucursal" : "mostrarCambiarSucursal",
         "change #sucursalCombo" : "cambiarSucursal"
     },
             
 
+    highlightParent: function(e) {
+        var 
+            $allRootMenu = $('.root-menu'),
+            $rootMenu = $(e.target).closest('.root-menu');
+
+        $allRootMenu.removeClass('selected-menu');
+        $rootMenu.addClass('selected-menu');
+    },
 
     cuentaCorriente: function(){
         this.closeAll();

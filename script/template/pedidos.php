@@ -37,27 +37,27 @@
 
 <script type="text/template" id="pedidosModificarTemplate">
     <form id="pedidosForm">
+        <div class="<@= (esPlantilla)? 'hide' : '' @>">
+            <label for="fechaRetiro">Fecha a retirar
+                <input type="text" id="fechaRetiro" value="<@= wcat.swapDateFormat(fechaRetiro) @>" 
+                class="obligatorio" title="Fecha de retiro" tabindex="10" style="width: 65px;margin-right: 8px;" />
+            </label>
 
-        <label for="fechaRetiro">Fecha a retirar
-            <input type="text" id="fechaRetiro" value="<@= wcat.swapDateFormat(fechaRetiro) @>" 
-            class="obligatorio" title="Fecha de retiro" tabindex="10" style="width: 65px;margin-right: 8px;" />
-        </label>
-
-        <label for="codigoCliente" style="margin-left: 20px">Cliente 
-            <select id="codigoCliente" style="display:none" class="obligatorio" title="Cliente" <@= (!isNew)? " disabled " : "" @> ></select>
-            <input id="searchCliente" style="width: 175px;" class="focusThis" value="<@= _nombreCliente @>" <@= (!isNew)? " disabled " : "" @> />
-        </label>
-        <button class="button smallButton" id="addCliente" title="Agregar Cliente" <@= (!isNew)? " disabled " : "" @> ><i class="icon-plus"></i></button>
-        
-        <label for="anticipo" style="margin-left: 20px">Anticipo 
-            <input type="text" id="anticipo" value="<@= anticipo @>" 
-                        class="onlyNumbers" 
-                        min="-1" 
-                        title="Anticipo" 
-                        tabindex="12" 
-                        <@= (anticipo != 0)? " disabled " : "" @>
-                        style="width: 35px" />
-        </label>
+            <label for="codigoCliente" style="margin-left: 20px">Cliente 
+                <select id="codigoCliente" style="display:none" class="obligatorio" title="Cliente" <@= (!isNew)? " disabled " : "" @> ></select>
+                <input id="searchCliente" style="width: 175px;" class="focusThis" value="<@= _nombreCliente @>" <@= (!isNew)? " disabled " : "" @> />
+            </label>
+            <button class="button smallButton" id="addCliente" title="Agregar Cliente" <@= (!isNew)? " disabled " : "" @> ><i class="icon-plus"></i></button>
+            
+            <label for="anticipo" style="margin-left: 20px">Anticipo 
+                <input type="text" id="anticipo" value="<@= anticipo @>" 
+                            class="onlyNumbers" 
+                            min="-1" 
+                            title="Anticipo" 
+                            tabindex="12" 
+                            style="width: 35px" />
+            </label>
+        </div>
         
         
         <div id="serviciosPedidosContainer">
@@ -84,19 +84,20 @@
         
         <div class="clear"></div>
         
-        <div style="height: 100px; width: 603px">
+        <div style="height: 100px; width: 603px" class="<@= (esPlantilla)? 'hide' : '' @>">
             <textarea id="observaciones" style="width: 575px; height: 70px; margin-top: 15px; margin-bottom: 15px; resize: none" placeholder="Ingrese aqui observaciones"><@= observaciones @></textarea>
         </div>
         
         
         <div class="popupButtons">
+            <button id="soloImprimir" class="editButtons hideButton <@= (esPlantilla)? 'hiddenImportant' : '' @>"><i class="icon-print"></i>Imprimir</button>
             <?php if(isAdmin()) { ?>
-                <@ if(isNew) { @>
+                <@ if(isNew && esPlantilla) { @>
                 <button id="guardarTemplate" class="editButtons hideButton"><i class="icon-save"></i> como plantilla</button>
                 <@ } @>
             <?php } ?>
-            <button id="imprimir" class="editButtons hideButton"><i class="icon-print"></i>Ok &amp; Imprimir</button>
-            <button id="aceptar" class="editButtons hideButton"><i class="icon-ok"></i>Ok</button>
+            <button id="imprimir" class="editButtons hideButton <@= (esPlantilla)? 'hiddenImportant' : '' @>"><i class="icon-print"></i>Ok &amp; Imprimir</button>
+            <button id="aceptar" class="editButtons hideButton <@= (isNew && esPlantilla)? 'hiddenImportant' : '' @>"><i class="icon-ok"></i>Ok</button>
             <button id="cancelar" class="editButtons hideButton"><i class="icon-remove"></i>Cancelar</button>
         </div>    
     </form>

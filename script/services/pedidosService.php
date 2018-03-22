@@ -15,37 +15,6 @@
         }
     
         
-/*        
-        public function listAll($entregado = 0, $fechaPedido = "") {
-    
-            $lista = $this->pedidos->listAll($entregado, $fechaPedido);
-            
-            $out = Array();
-            $out["aaData"] = Array();
-
-            foreach($lista as $row) {
-                // correccion para evitar division por cero
-                if($row["_cantTotal"] == 0) $row["_cantTotal"] = 1;
-                
-                $newRow = Array(
-                    "DT_RowId" => $row["codigo"],
-                    "0" => str_pad($row["codigo"], 8, '0', STR_PAD_LEFT),
-                    "1" => $row["fechaPedido"][0],
-                    "2" => $row["nombres"] ." ". $row['apellido'],
-                    "3" => $row["direccion"],
-                    "4" => $row["telefono"],
-                    "5" => $row["fechaRetiro"],
-                    "6" => ($row["_cantDerivaciones"] > 0)? '<i class="icon-exclamation-sign"></i>':'',
-                    "7" => number_format(($row["_cantProcesado"] / $row["_cantTotal"]) * 100, 2)
-                );
-                $out["aaData"][] = $newRow;
-            }
-            
-            return $out;
-        }
-*/        
-
-        
         public function getPagedSorted($sSearch, $start, $length, $sEcho, $entregado, $fechaPedido) {
     
             $sEcho++;
@@ -77,6 +46,36 @@
             return $out;
         }
         
+
+        public function getPagedSortedTemplates($sSearch, $start, $length, $sEcho) {
+    
+            $sEcho++;
+            $lista = $this->pedidos->getPagedSortedTemplates($sSearch, $start, $length);
+            
+            $out = Array();
+            $out["iTotalRecords"] = $this->pedidos->countTemplates($sSearch);
+            $out["iTotalDisplayRecords"] = $out["iTotalRecords"];
+            $out["sEcho"] = $sEcho;
+            $out["aaData"] = Array();
+            
+            foreach($lista as $row) {
+                $newRow = Array(
+                    "DT_RowId" => $row["codigo"],
+                    "0" => str_pad($row["codigo"], 8, '0', STR_PAD_LEFT),
+                    "1" => $row["fechaPedido"][0],
+                    "2" => $row["nombreTemplate"],
+                    "3" => "", // $row["direccion"],
+                    "4" => "", // $row["telefono"],
+                    "5" => $row["fechaPedido"][0],
+                    "6" => "", // ($row["_cantDerivaciones"] > 0)? '<i class="icon-exclamation-sign"></i>':'',
+                    "7" => "", // number_format(($row["_cantProcesado"] / $row["_cantTotal"]) * 100, 2)
+                );
+                $out["aaData"][] = $newRow;
+            }
+            
+            return $out;
+        }
+
         
         
         public function listTemplates() {

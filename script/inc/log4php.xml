@@ -3,7 +3,7 @@
         <layout class="LoggerLayoutPattern">
             <param name="conversionPattern" value="%date %logger %-5level %file - en linea %line : %msg%n REQUEST: %request  - SESSION: %session %n" />
         </layout>
-        <param name="file" value="script/log/lavarrap.log" />
+        <param name="file" value="/home/mauro/Documentos/trabajos/web/lavarrap/web/script/log/lavarrap.log" />
         <param name="maxFileSize" value="512KB" />
         <param name="maxBackupIndex" value="10" />        
     </appender>

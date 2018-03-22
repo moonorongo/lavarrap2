@@ -31,7 +31,7 @@ Pedidos = Backbone.View.extend({
             "click #modificar": "modificar",
             "click #borrar": "borrar",
             "click #entregar" : "entregar",
-            "click #verEntregado" : "refresh",
+            "change #filtroDt" : "updateTopMenuAndRefresh",
             "click #reset" : "clearDatepicker",
             "change #fechaPedidos" : "refresh"
         },
@@ -98,6 +98,34 @@ Pedidos = Backbone.View.extend({
             this.refresh();
         },
                 
+        updateTopMenuAndRefresh: function() {
+            var filtroDt = parseInt($('#filtroDt').val());
+            switch(filtroDt) {
+                case 0 :    // sin entregar
+                            this.$('div.ABMButtons button.ABMButton').removeClass('occult');
+                            this.$('.filtroFecha').removeClass('occult');
+                            this.$('.ui-datepicker-trigger').removeClass('occult');
+                            this.$('#datatable_filter').removeClass('occult');
+                            break;
+                case 1 :    // entregados
+                            this.$('div.ABMButtons button.ABMButton').removeClass('occult');
+                            this.$('#entregar, #borrar, #nuevo, #nuevoDesdePlantilla').addClass('occult');  
+                            this.$('.filtroFecha').removeClass('occult');
+                            this.$('.ui-datepicker-trigger').removeClass('occult');
+                            this.$('#datatable_filter').removeClass('occult');
+                            break;
+                case 2 :    // plantillas
+                            this.$('div.ABMButtons button.ABMButton').removeClass('occult');
+                            this.$('#entregar, #nuevoDesdePlantilla').addClass('occult');  
+                            this.$('.filtroFecha').addClass('occult');
+                            this.$('.ui-datepicker-trigger').addClass('occult');
+                            this.$('#datatable_filter').addClass('occult');
+                            break;
+            }
+
+            this.refresh();
+        },
+
         refresh: function() {
             main.pedidos.oTable.fnReloadAjax();
         },
@@ -173,18 +201,23 @@ Pedidos = Backbone.View.extend({
         
         modificarModel : function(isNew) {
             var title = (isNew)? 'Nuevo' : 'Editar';
+            var filtroDt = parseInt($('#filtroDt').val());
+            var tipoPedido = (filtroDt == 2)? ' plantilla' : ' pedido';
             var _this = this;
             
             $('#editPedidoPopup').dialog({
                 height: 560,
                 width: 630,
-                title: title +' pedido',
+                title: title + tipoPedido,
                 resizable: false,
                 modal: true
             });         
             
             this.pedidosModificarView = new PedidosModificarView({
-                model: _this.model
+                model: _this.model,
+                attributes: {
+                    filtroDt : filtroDt
+                }
             });            
         },
         
@@ -225,36 +258,8 @@ Pedidos = Backbone.View.extend({
             var _this = this;
             
             var idContainer = 'datatable';
-/*            
-            var aoColumnDefs = [];
-            $('#'+ idContainer +' thead tr th').each(function(i,e){
-                var aTargets = [i];
-                aoColumnDefs.push({
-                    "sClass" : $(e).css('textAlign'),
-                    "aTargets" : aTargets,
-                    "sWidth" : $(e).css('width')
-                })
-            });
-
-            var _DT = wcat.dtWrapper(
-                'pedidos.php',
-                idContainer,
-                this,
-                aoColumnDefs
-            );          
-            
-            DTConfig.fnServerParams = function ( aoData ) {
-                var entregado = ($('#verEntregado').prop('checked'))? 1:0;
-                var fechaPedido = $('#fechaPedidos').val();
-                aoData.push( { "name": "entregado", "value": entregado } );
-                if(fechaPedido != "" && !_.isUndefined(fechaPedido)) aoData.push( { "name": "fechaPedido", "value": wcat.swapDateFormat(fechaPedido)} );
-            }
-*/            
-            
-            
 
             DTConfig.sAjaxSource = 'pedidos.php';
-//            DTConfig.bServerSide = true;
             DTConfig.bSort = false;
 
             var idContainer = 'datatable';
@@ -270,7 +275,7 @@ Pedidos = Backbone.View.extend({
             });
 
             DTConfig.fnServerParams = function ( aoData ) {
-                var entregado = ($('#verEntregado').prop('checked'))? 1:0;
+                var entregado = ($('#filtroDt').val());
                 var fechaPedido = $('#fechaPedidos').val();
                 aoData.push( { "name": "entregado", "value": entregado } );
                 if(fechaPedido != "" && !_.isUndefined(fechaPedido)) aoData.push( { "name": "fechaPedido", "value": wcat.swapDateFormat(fechaPedido)} );
@@ -377,12 +382,15 @@ TemplateCollection = Backbone.Collection.extend({
 PedidosModificarView = Backbone.View.extend({
     
     initialize: function() {
-        var _this = this;
+        var _this = this,
+            esPlantilla = (this.attributes.filtroDt == 2); 
+
+        this.model.set({ esPlantilla : esPlantilla});
 
         this.$el = $('#pedidosModificarContainer');
         this.el = this.$el[0];
-
         this.render();
+
         $('.focusThis', this.el).focus();
         
         $('#fechaRetiro', this.$el).datepicker({
@@ -417,12 +425,25 @@ PedidosModificarView = Backbone.View.extend({
                 });
             }              
             });
+
+            this.$('#aceptar, #imprimir').show();  
+            this.$('#soloImprimir').hide();  
+
+        } else {
+            if(this.model.attributes.entregado) {
+                this.$('#aceptar, #imprimir').hide();  
+                this.$('#soloImprimir').show();  
+            } else {
+                this.$('#aceptar, #imprimir').show();  
+                this.$('#soloImprimir').hide();  
+            }
+            
         }
         
         this.serviciosPedidos = new ServiciosPedidos({
             collection : _this.model.get("listaServicios")
         });
-        
+
     }, 
 
     events: {
@@ -430,6 +451,7 @@ PedidosModificarView = Backbone.View.extend({
         "click #guardarTemplate": "guardarTemplate",
         "click #cancelar": "cancelar",
         "click #imprimir": "aceptar",
+        "click #soloImprimir": "aceptar",
         "click #addItem" : "addItem",
         "click #addCliente" : "addCliente"
     },
@@ -437,12 +459,13 @@ PedidosModificarView = Backbone.View.extend({
     
     guardarTemplate: function(e) {
         e.preventDefault;
-        // NOTA: al momento de guardar como plantilla, buscar si existe el nombre, alertar, y sugerir si sobreescribe.
-        
+
         var nombre = prompt("Nombre de la plantilla?");
         if(!_.isNull(nombre)) {
             this.model.set("nombre",nombre, {silent: true});
             this.aceptar(e);
+        } else {
+            this.cancelar(e);
         }
     },
     
@@ -487,11 +510,11 @@ PedidosModificarView = Backbone.View.extend({
 
 
     aceptar: function(e){
-        e.preventDefault(); // corta la propagacion de eventos.
+        e.preventDefault(); 
         var _this = this;
         var hasError = 0;
 
-        if(this.model.isNew()) { 
+        if(this.model.isNew() && (this.attributes.filtroDt != 2)) { 
             validate.test(this.$el);
             hasError = validate.getErrorCount(this.$el);
         }
@@ -511,8 +534,9 @@ PedidosModificarView = Backbone.View.extend({
         	
         var _this = this;
         
-        var imprimir = (e.target.id == "imprimir")? true : false;
-        var listaCantidadCero = [];
+        var imprimir = (e.target.id == "imprimir")? true : false,
+            soloImprimir = (e.target.id == "soloImprimir")? true : false,
+            listaCantidadCero = [];
 
         _this.model.get("listaServicios").each( function(m){ 
             if(m.isNew()) m.set("codigo", -1);
@@ -530,6 +554,7 @@ PedidosModificarView = Backbone.View.extend({
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "anticipo" : (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
                 "imprimir" : imprimir,
+                "soloImprimir" : soloImprimir,
                 "_nombreCliente" : _this.$('#codigoCliente option:selected').html(),
                 "observaciones" : _this.$('#observaciones').val()
             }, {silent: true});
@@ -537,6 +562,7 @@ PedidosModificarView = Backbone.View.extend({
             _this.model.set({
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "imprimir" : imprimir,
+                "soloImprimir" : soloImprimir,
                 "_nombreCliente" : _this.$('#searchCliente').val(),
                 "observaciones" : _this.$('#observaciones').val(),
                 "anticipo" : (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val()
@@ -551,7 +577,7 @@ PedidosModificarView = Backbone.View.extend({
                 main.pedidos.lastRowSelected = null;
                 main.pedidos.oTable.fnReloadAjax();
                 
-                if(imprimir) {
+                if(imprimir || soloImprimir) {
                     setTimeout(function(){
                         window.open("/static/download/"+ globalConfig.SESSIONID +".pdf","Ticket Cliente","directories=0, height=600, location=0, menubar=0, width=500");
                     }, 500);

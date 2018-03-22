@@ -11,6 +11,21 @@
         }
         
 
+        public function listAll() {
+            $sql = "SELECT codigo, observaciones FROM caja 
+                    WHERE 
+                        (observaciones like '%SVM%') OR
+                        (observaciones like '%SCR%') OR
+                        (observaciones like '%SZE%') OR
+                        (observaciones like '%SBE%') OR
+                        (observaciones like '%SMI%') OR
+                        (observaciones like '%SCA%') OR
+                        (observaciones like '%PAT%')";
+
+            return $this->mysql->query($sql);
+        }
+
+
         public function cajaDiaria($fecha) {
             $sql =  "SELECT SUM(monto) as sumaCobrado 
                      FROM caja WHERE DATE(fecha) = DATE('$fecha') AND 
@@ -102,7 +117,16 @@
             $stmt -> execute();
         }
         
-        
+
+        public function registrarCajaPedido($monto, $codigoPedido, $observaciones = "") {
+            $stmt = $this->mysql->getStmt("INSERT INTO caja(monto,codigoSucursal, observaciones) VALUES (?, ?, ?)");
+            $stmt->bind_param("dis", $monto, $this->codigoSucursal, $observaciones);
+            $stmt->execute();
+            $codigoCaja = $this->mysql->getLastId();
+
+            $pedidosCajaDao = new PedidosCaja($this->mysql);
+            $pedidosCajaDao->insertOrUpdate($codigoCaja, $codigoPedido);
+        } 
         
         
         

@@ -63,14 +63,32 @@
         
         public function get($codigo) {
             
-            $stmt = $this->mysql->getStmt("SELECT p.fechaPedido, p.fechaRetiro, p.codigoCliente, 
-                p.activo, CONCAT(c.nombres, ' ', c.apellido) as _nombreCliente, p.anticipo, p.nombre, p.observaciones
-                FROM pedidos p INNER JOIN clientes c ON p.codigoCliente = c.codigo 
+            $stmt = $this->mysql->getStmt(
+              "SELECT 
+                  p.fechaPedido, 
+                  p.fechaRetiro, 
+                  p.codigoCliente, 
+                  p.activo, 
+                  CONCAT(c.nombres, ' ', c.apellido) as _nombreCliente, 
+                  p.anticipo, 
+                  p.nombre, 
+                  p.observaciones,
+                  p.entregado
+                FROM pedidos p 
+                LEFT JOIN clientes c ON p.codigoCliente = c.codigo 
                 WHERE p.codigo = ?");
             
             $stmt -> bind_param("i", $codigo);
             $stmt -> execute();
-            $stmt -> bind_result($fechaPedido, $fechaRetiro, $codigoCliente, $activo, $_nombreCliente, $anticipo, $nombre, $observaciones);
+            $stmt -> bind_result($fechaPedido, 
+                                  $fechaRetiro, 
+                                  $codigoCliente, 
+                                  $activo, 
+                                  $_nombreCliente, 
+                                  $anticipo, 
+                                  $nombre, 
+                                  $observaciones, 
+                                  $entregado);
             
             $stmt -> fetch();
             $out = array("codigo" => $codigo,
@@ -81,7 +99,8 @@
                            "_nombreCliente" => $_nombreCliente,
                            "anticipo" => $anticipo,
                            "nombre" => $nombre,
-                           "observaciones" => $observaciones
+                           "observaciones" => $observaciones,
+                           "entregado" => $entregado
                           );
             
             $stmt -> close();
@@ -158,9 +177,9 @@
             
             if($entregado == 0) {
                 $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaPedido) = '$fechaPedido') " : " (1 = 1) ";
-            } else {
+            } else if($entregado == 1) {
                 $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaRetiro) = '$fechaPedido') " : " (1 = 1) ";
-            }
+            } 
 
             $sql = 
                 "SELECT 
@@ -187,10 +206,10 @@
         public function getPagedSorted($sSearch, $start, $length, $entregado, $fechaPedido) {
 
             if($entregado == 0) {
-                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaPedido) = '$fechaPedido' " : " true ";
-            } else {
-                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaRetiro) = '$fechaPedido' " : " true ";
-            }
+                $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaPedido) = '$fechaPedido') " : " (1 = 1) ";
+            } else if($entregado == 1) {
+                $whereFechaPedido = ($fechaPedido != "")? " (DATE(fechaRetiro) = '$fechaPedido') " : " (1 = 1) ";
+            } 
 
             $sSearch = strtoupper($sSearch);
             // Armo query busqueda en base a configuracion columns
@@ -218,15 +237,13 @@
                       p.codigoSucursal = $this->codigoSucursal 
                       AND p.entregado = $entregado 
                       AND p.activo = 1 
-                      AND p.nombre IS NULL 
+                      AND (p.nombre IS NULL)
                       AND $whereFechaPedido
                       AND $aBuscar 
                     ORDER BY p.fechaPedido DESC, 
                              p.CODIGO DESC 
                     LIMIT $start, $length";
 
-//            $this->log->warn($sql);
-                    
             $stmt = $this->mysql->getStmt($sql);
             $stmt -> execute();
             $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion);
@@ -255,6 +272,80 @@
 
 
     
+        public function getPagedSortedTemplates($sSearch, $start, $length) {
+
+            $sSearch = strtoupper($sSearch);
+            // Armo query busqueda en base a configuracion columns
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
+       
+            $out = Array();
+            
+            $sql =  "SELECT 
+                        p.codigo, p.nombre, p.fechaPedido 
+                    FROM  pedidos p 
+                    WHERE 
+                      p.codigoSucursal = $this->codigoSucursal 
+                      AND p.activo = 1 
+                      AND p.nombre IS NOT NULL 
+                      AND $aBuscar 
+                    ORDER BY p.nombre ASC 
+                    LIMIT $start, $length";
+
+            $stmt = $this->mysql->getStmt($sql);
+            $stmt -> execute();
+            $stmt -> bind_result($codigo, $nombre, $fechaPedido);
+            
+
+            while($stmt -> fetch()) {
+                $tmpRow = array("codigo" => $codigo,
+                           "nombreTemplate" => $nombre,
+                           "fechaPedido" => explode(" ", $fechaPedido)
+                          );
+                $out[] = $tmpRow;
+            }
+            
+            $stmt -> close();
+            return $out;
+        }
+
+
+        public function countTemplates($sSearch) {
+            $out = -1;
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
+            
+            $sql = 
+                "SELECT 
+                   count(p.codigo) AS total
+                FROM  pedidos p 
+                WHERE 
+                  (p.codigoSucursal = $this->codigoSucursal)
+                  AND p.activo = 1 
+                  AND p.nombre IS NOT NULL 
+                  AND $aBuscar 
+                ORDER BY p.nombre ASC";
+            
+            $result = $this->mysql->query($sql);
+            
+            if ($row = $result->fetch_assoc()) {
+                $out = $row["total"];
+            }
+            return $out;
+        }
+
         
         
         
