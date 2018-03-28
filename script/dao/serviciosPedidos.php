@@ -10,19 +10,6 @@
             $this->mysql = $mysql;
         }
         
-/*        private function getNewId() {
-            $result = $this->mysql->query("SELECT codigo FROM serviciosPedidos ORDER BY codigo desc limit 1");
-            if($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                $out = $row["codigo"] + 1;
-                }
-            } else {
-                $out = 1;
-            }
-            return $out;
-        }*/
-        
-        
         public function listAll($codigoEstado) {
             
             $condicionEstado = ($codigoEstado != -1)? " AND (sp.codigoEstado = ". $codigoEstado .")" : " AND (sp.codigoEstado < 4)";
@@ -38,7 +25,8 @@
                     sp.codigoEstado,
                     pr2.prefijoCodigo,
                     sp.codigoPedido,
-                    pr.esSucursal
+                    pr.esSucursal,
+                    p.codigoTalon
              FROM serviciosPedidos sp 
              INNER JOIN pedidos p ON sp.codigoPedido = p.codigo
              INNER JOIN servicios s ON sp.codigoServicio = s.codigo
@@ -67,7 +55,8 @@
                     $codigoEstado,
                     $prefijoCodigo,
                     $codigoPedido,
-                    $esSucursal);
+                    $esSucursal,
+                    $codigoTalon);
             
             while($stmt -> fetch()) {
                 $tmpRow = array("codigo" => $codigo,
@@ -82,7 +71,8 @@
                            "codigoEstado" => $codigoEstado,
                            "prefijoCodigo" => $prefijoCodigo,
                            "codigoPedido" => $codigoPedido,
-                           "esSucursal" => $esSucursal
+                           "esSucursal" => $esSucursal,
+                           "codigoTalon" => $codigoTalon
                           );
                 $out[] = $tmpRow;
             }
@@ -104,7 +94,8 @@
                                             CONCAT(c.nombres, ' ', c.apellido) AS _nombreCliente ,
                                             s.valor AS _valor,
                                             p.fechaPedido AS _fechaPedido,
-                                            p.observaciones
+                                            p.observaciones,
+                                            p.codigoTalon
                                             FROM serviciosPedidos sp
                                             INNER JOIN pedidos p ON sp.codigoPedido = p.codigo
                                             INNER JOIN clientes c ON p.codigoCliente = c.codigo
@@ -124,7 +115,8 @@
                     $_nombreCliente,
                     $_valor,
                     $_fechaPedido,
-                    $observaciones);
+                    $observaciones,
+                    $codigoTalon);
             
 
             $stmt -> fetch();
@@ -141,7 +133,8 @@
                         "_nombreCliente" => $_nombreCliente,
                         "_valor" => $_valor,
                         "_fechaPedido" => $ftemp[0],
-                        "observaciones" => $observaciones
+                        "observaciones" => $observaciones,
+                        "codigoTalon" => $codigoTalon
                     );
             
             $stmt -> close();
@@ -155,12 +148,13 @@
         
         public function getByCodigoPedido($codigoPedido) {
             $out = Array();
-            $result = $this->mysql->query("SELECT _sp.*, s.descripcion AS _descripcion , 
+            $result = $this->mysql->query("SELECT _sp.*, s.descripcion AS _descripcion ,
                     p.descripcion AS _descripcionProveedor, (_sp.cantidad * s.valor) AS _subTotal 
                     FROM serviciosPedidos _sp 
                     INNER JOIN servicios s ON _sp.codigoServicio = s.codigo 
                     LEFT JOIN proveedores p ON p.codigo = _sp.codigoProveedor
                     WHERE _sp.codigoPedido = ". $codigoPedido);
+
             while ($row = $result->fetch_assoc()) {
                 $out[] = $row;
             }

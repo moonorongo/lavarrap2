@@ -28,10 +28,12 @@
             
             foreach($lista as $row) {
                 if($row["_cantTotal"] == 0) $row["_cantTotal"] = 1;
-                
+
+                $columnaCodigo = (is_null($row["codigoTalon"]) || empty($row["codigoTalon"]) )? '('.str_pad($row["codigo"], 8, '0', STR_PAD_LEFT).')' : str_pad($row["codigoTalon"], 8, '0', STR_PAD_LEFT);
+
                 $newRow = Array(
                     "DT_RowId" => $row["codigo"],
-                    "0" => str_pad($row["codigo"], 8, '0', STR_PAD_LEFT),
+                    "0" => $columnaCodigo,
                     "1" => $row["fechaPedido"][0],
                     "2" => $row["nombres"] ." ". $row['apellido'],
                     "3" => $row["direccion"],
@@ -132,7 +134,6 @@
 
             return $model;
         }
-        
 
         
         public function update($model) {
@@ -156,31 +157,5 @@
             endforeach;
         }
 
-/*        
-// Metodos utilizados por Cuenta Corriente - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-        public function listAllCuentaCorriente($codigoCliente) {
-    
-            $lista = $this->pedidos->listAllCuentaCorriente($codigoCliente);
-            
-            $out = Array();
-            $out["aaData"] = Array();
-
-            foreach($lista as $row) {
-                
-                $newRow = Array(
-                    "DT_RowId" => $row["codigo"],
-                    "0" => str_pad($row["codigo"], 8, '0', STR_PAD_LEFT),
-                    "1" => $row["fechaRetiro"],
-                    "2" => $row["_valor"],
-                    "3" => $row["aCobrar"]
-                );
-                $out["aaData"][] = $newRow;
-            }
-            
-            return $out;
-        }
-  */      
-    
     }
-
 ?>

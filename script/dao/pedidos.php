@@ -36,14 +36,16 @@
                     codigoSucursal = ?,
                     nombre = ?,
                     anticipo = ?,
+                    codigoTalon = ?,
                     observaciones = ? WHERE codigo = ?"; 
             
             $stmt = $this->mysql->getStmt($sql);
-            $stmt->bind_param("siisdsi", $modelData['fechaRetiro'], 
+            $stmt->bind_param("siisdisi", $modelData['fechaRetiro'], 
                                       $modelData['codigoCliente'], 
                                       $this->codigoSucursal, 
                                       $modelData['nombre'],
                                       $modelData['anticipo'],
+                                      $modelData['codigoTalon'],
                                       $modelData['observaciones'],
                                       $modelData['codigo']);
             $stmt->execute();
@@ -73,7 +75,8 @@
                   p.anticipo, 
                   p.nombre, 
                   p.observaciones,
-                  p.entregado
+                  p.entregado,
+                  p.codigoTalon
                 FROM pedidos p 
                 LEFT JOIN clientes c ON p.codigoCliente = c.codigo 
                 WHERE p.codigo = ?");
@@ -88,7 +91,8 @@
                                   $anticipo, 
                                   $nombre, 
                                   $observaciones, 
-                                  $entregado);
+                                  $entregado,
+                                  $codigoTalon);
             
             $stmt -> fetch();
             $out = array("codigo" => $codigo,
@@ -100,7 +104,8 @@
                            "anticipo" => $anticipo,
                            "nombre" => $nombre,
                            "observaciones" => $observaciones,
-                           "entregado" => $entregado
+                           "entregado" => $entregado,
+                           "codigoTalon" => $codigoTalon
                           );
             
             $stmt -> close();
@@ -108,62 +113,6 @@
         }
         
 
-        
-        
-/*
-        public function listAll($entregado, $fechaPedido) {
-            
-            if($entregado == 0) {
-                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaPedido) = '$fechaPedido'" : " true";
-            } else {
-                $whereFechaPedido = ($fechaPedido != "")? " DATE(p.fechaRetiro) = '$fechaPedido'" : " true";
-            }
-            
-            $sql = "SELECT p.codigo, p.fechaPedido, c.nombres, c.apellido, c.telefono, p.fechaRetiro, 
-                (SELECT count(codigoProveedor) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoProveedor is not null) AS _cantDerivaciones,
-                (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoEstado > 2)  AS _cantProcesado,
-                (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo)  AS _cantTotal,
-                
-                pr.prefijoCodigo, c.direccion 
-                FROM pedidos p 
-                INNER JOIN clientes c ON p.codigoCliente = c.codigo 
-                INNER JOIN proveedores pr ON p.codigoSucursal = pr.codigo
-                WHERE p.codigoSucursal = $this->codigoSucursal 
-                      AND p.entregado = $entregado 
-                      AND p.activo = 1 
-                      AND p.nombre IS NULL 
-                      AND $whereFechaPedido 
-                ORDER BY p.fechaRetiro DESC LIMIT 300";
-
-//AND YEAR(NOW()) = YEAR(p.fechaPedido) 
-                
-            $out = Array();
-            
-            $stmt = $this->mysql->getStmt($sql);
-            $stmt -> execute();
-            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion);
-            
-
-            while($stmt -> fetch()) {
-                $tmpRow = array("codigo" => $codigo,
-                           "fechaPedido" => explode(" ", $fechaPedido),
-                           "nombres" => $nombres,
-                           "apellido" => $apellido,
-                           "telefono" => $telefono,
-                           "fechaRetiro" => $fechaRetiro,
-                           "_cantDerivaciones" => $_cantDerivaciones,
-                           "_cantProcesado" => $_cantProcesado,
-                           "_cantTotal" => $_cantTotal,
-                           "prefijoCodigo" => $prefijoCodigo,
-                            "direccion" => $direccion
-                          );
-                $out[] = $tmpRow;
-            }
-            
-            $stmt -> close();
-            return $out;
-        }        
-  */  
 
         public function count($entregado, $fechaPedido, $sSearch) {
             $searchCondition = " ( ";
@@ -229,7 +178,7 @@
                         (SELECT count(codigoProveedor) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoProveedor is not null) AS _cantDerivaciones,
                         (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoEstado > 2)  AS _cantProcesado,
                         (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo)  AS _cantTotal,
-                        pr.prefijoCodigo, c.direccion 
+                        pr.prefijoCodigo, c.direccion , p.codigoTalon
                     FROM  pedidos p 
                     INNER JOIN clientes c ON p.codigoCliente = c.codigo 
                     INNER JOIN proveedores pr ON p.codigoSucursal = pr.codigo
@@ -246,9 +195,8 @@
 
             $stmt = $this->mysql->getStmt($sql);
             $stmt -> execute();
-            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion);
+            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion, $codigoTalon);
             
-
             while($stmt -> fetch()) {
                 $tmpRow = array("codigo" => $codigo,
                            "fechaPedido" => explode(" ", $fechaPedido),
@@ -260,7 +208,8 @@
                            "_cantProcesado" => $_cantProcesado,
                            "_cantTotal" => $_cantTotal,
                            "prefijoCodigo" => $prefijoCodigo,
-                            "direccion" => $direccion
+                           "direccion" => $direccion,
+                           "codigoTalon" => $codigoTalon
                           );
                 $out[] = $tmpRow;
             }
@@ -273,7 +222,7 @@
 
     
         public function getPagedSortedTemplates($sSearch, $start, $length) {
-
+/*
             $sSearch = strtoupper($sSearch);
             // Armo query busqueda en base a configuracion columns
             $searchCondition = " ( ";
@@ -284,7 +233,7 @@
             $searchCondition .= " ) ";
             
             $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
-       
+*/       
             $out = Array();
             
             $sql =  "SELECT 
@@ -294,7 +243,6 @@
                       p.codigoSucursal = $this->codigoSucursal 
                       AND p.activo = 1 
                       AND p.nombre IS NOT NULL 
-                      AND $aBuscar 
                     ORDER BY p.nombre ASC 
                     LIMIT $start, $length";
 
@@ -318,6 +266,7 @@
 
         public function countTemplates($sSearch) {
             $out = -1;
+/*            
             $searchCondition = " ( ";
             foreach ($this->columns as $key => $value) {
                 $or = ($key == 0)? " ":" OR ";
@@ -326,7 +275,7 @@
             $searchCondition .= " ) ";
             
             $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
-            
+*/            
             $sql = 
                 "SELECT 
                    count(p.codigo) AS total
@@ -335,7 +284,6 @@
                   (p.codigoSucursal = $this->codigoSucursal)
                   AND p.activo = 1 
                   AND p.nombre IS NOT NULL 
-                  AND $aBuscar 
                 ORDER BY p.nombre ASC";
             
             $result = $this->mysql->query($sql);

@@ -64,11 +64,16 @@
         
         
         
-        public function listEgresosMes($fecha) {
-            
-            $sql = "SELECT * FROM caja WHERE month(fecha) = month('$fecha') 
-                AND year(fecha) = year('$fecha') 
-                AND codigoSucursal = $this->codigoSucursal ORDER BY fecha";
+        public function listEgresosMes($fecha, $search = "") {
+            if(empty($search)) {
+                $sql = "SELECT * FROM caja WHERE month(fecha) = month('$fecha') 
+                    AND year(fecha) = year('$fecha') 
+                    AND codigoSucursal = $this->codigoSucursal ORDER BY fecha";
+            } else {
+                $sql = "SELECT * FROM caja 
+                        WHERE observaciones LIKE '%$search%'
+                        AND codigoSucursal = $this->codigoSucursal ORDER BY fecha LIMIT 1000";
+            }
                 
             $out = Array();
             $result = $this->mysql->query($sql);
@@ -95,12 +100,14 @@
             }
             return $out;
         }
-        
-        
-        public function diferenciaDiaria($fecha) {}
-        
-        public function diferenciaMensual($fecha) {}
-        
+
+
+        public function editarCaja($codigo, $monto, $observaciones) {
+            $stmt = $this->mysql->getStmt("UPDATE caja SET monto = ?, observaciones = ? WHERE codigo = ?");
+            $stmt->bind_param("dsi", $monto, $observaciones, $codigo);
+            $stmt->execute();
+        }
+
         
         public function registrarIngreso($monto, $observaciones = "") {
             $monto = abs($monto);

@@ -22,22 +22,27 @@
             $caja = new Caja($mysql);
             $action = (isset($_REQUEST["action"]))? $_REQUEST["action"] : null;
 
-            
             if($action == 'cajaHandler') {
                 $model = json_decode($_REQUEST["model"]);
 
-                if($model->sign == 1) {
-                    $caja->registrarIngreso($model->monto, $model->observaciones);
+                if($model->codigo != -1) {
+                    $caja->editarCaja($model->codigo, $model->monto, $model->observaciones);
                 } else {
-                    $caja->registrarEgreso($model->monto, $model->observaciones);
+                    if($model->sign == 1) {
+                        $caja->registrarIngreso($model->monto, $model->observaciones);
+                    } else {
+                        $caja->registrarEgreso($model->monto, $model->observaciones);
+                    }
                 }
+
                 echo '{"success" : '. $model->sign .'}';
             }
 
 
             if($action == 'cajaListHandler') {
                 $fecha = $_REQUEST["fecha"];
-                $cList = $caja->listEgresosMes($fecha);
+                $search = $_REQUEST['search'];
+                $cList = $caja->listEgresosMes($fecha, $search);
                 echo json_encode($cList);
             }    
             
@@ -62,6 +67,11 @@
 
             if($action == 'fixPedidosCaja') {
                 require_once($_SERVER["DOCUMENT_ROOT"] ."/script/includes/caja/pedidos_caja.php");
+            }
+
+
+            if($action == 'deleteCaja') {
+                require_once($_SERVER["DOCUMENT_ROOT"] ."/script/includes/caja/delete.php");
             }
 
             

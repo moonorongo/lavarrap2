@@ -38,7 +38,12 @@
 <script type="text/template" id="pedidosModificarTemplate">
     <form id="pedidosForm">
         <div class="<@= (esPlantilla)? 'hide' : '' @>">
-            <label for="fechaRetiro">Fecha a retirar
+            <label for="codigoTalon">C&oacute;digo
+                <input type="text" id="codigoTalon" value="<@= codigoTalon @>" 
+                class="obligatorio" title="Codigo de talon" tabindex="0" style="width: 65px;margin-right: 8px;" />
+            </label>
+
+            <label for="fechaRetiro">A retirar
                 <input type="text" id="fechaRetiro" value="<@= wcat.swapDateFormat(fechaRetiro) @>" 
                 class="obligatorio" title="Fecha de retiro" tabindex="10" style="width: 65px;margin-right: 8px;" />
             </label>
@@ -61,19 +66,22 @@
         
         
         <div id="serviciosPedidosContainer">
-            <ul class="headerLista" style="width: 604px;">
+            <ul class="headerLista" style="width: 704px;">
                 <li>
-                    <div class="floatLeft" style="width: 195px">Descripci&oacute;n</div>
+                    <div class="floatLeft" style="width: 295px">Descripci&oacute;n</div>
                     <div class="floatLeft" style="width: 55px; text-align: center">Cant.</div>
                     <div class="floatLeft" style="width: 55px; text-align: center" id="valor">Valor</div>
                     <div class="floatLeft" style="width: 135px; text-align: left" id="valor">Derivar a</div>
                     <div class="floatLeft" style="width: 138px; text-align: left">Acciones</div>                
                 </li>
             </ul>
-            <ul id="listaServiciosPedidosContainer" class="listaItemsContainer" style="width: 603px; height: 250px"></ul>
+            <ul id="listaServiciosPedidosContainer" class="listaItemsContainer" style="width: 703px; height: 250px"></ul>
             <ul class="ulRow"> 
-                <div class="view" style="width: 150px;float: left;">
+                <div class="view" style="width: 500px;float: left;">
                     <button class="button" id="addItem" tabindex=1 title="Agregar Servicio"><i class="icon-plus"></i> Servicio</button>
+                </div>
+                <div class="view" style="width: 180px; float: left; text-align: right; font-weight: bold;">
+                    TOTAL: $ <span id="totalFactura"></span>
                 </div>
             </ul>
         </div>
@@ -84,8 +92,8 @@
         
         <div class="clear"></div>
         
-        <div style="height: 100px; width: 603px" class="<@= (esPlantilla)? 'hide' : '' @>">
-            <textarea id="observaciones" style="width: 575px; height: 70px; margin-top: 15px; margin-bottom: 15px; resize: none" placeholder="Ingrese aqui observaciones"><@= observaciones @></textarea>
+        <div style="height: 100px; width: 703px" class="<@= (esPlantilla)? 'hide' : '' @>">
+            <textarea id="observaciones" style="width: 675px; height: 70px; margin-top: 15px; margin-bottom: 15px; resize: none" placeholder="Ingrese aqui observaciones"><@= observaciones @></textarea>
         </div>
         
         
@@ -109,7 +117,7 @@
 
 <script type="text/template" id="serviciosPedidosRowTemplate">
     <div class="view">
-        <div class="floatLeft singleRow" style="width: 200px"><@= _descripcion  @>&nbsp;</div>
+        <div class="floatLeft singleRow" style="width: 300px"><@= _descripcion  @>&nbsp;</div>
         <div class="floatLeft" style="width: 55px; text-align: center"><@= cantidad @>&nbsp;</div>
         <div class="floatLeft" style="width: 50px; text-align: right; padding-right: 10px" id="valor"><@= _subTotal.toFixed(2) @></div>
         <div class="floatLeft" style="width: 140px"><@= _descripcionProveedor  @>&nbsp;</div>
@@ -119,8 +127,8 @@
         </div>
     </div>
     <div class="edit">
-        <div class="floatLeft" style="width: 200px" >
-            <select id="codigoServicio" class="focusThis" tabindex="2" style="width: 180px">
+        <div class="floatLeft" style="width: 300px" >
+            <select id="codigoServicio" class="focusThis" tabindex="2" style="width: 280px">
                 <option value="none">Seleccione un servicio...</option>
                 <@ _.each(main.pedidos.model.get("listaServiciosCombo"), function(e){ @>
                     <@ var selected = (e.codigo == codigoServicio)? 'selected': ''; @>
@@ -195,14 +203,16 @@
             <td style="text-align: right">A cobrar </td>
             <td style="text-align: right"><@= aCobrar.toFixed(2) @></td>
         </tr>
-        <tr class="sinBordeInferior detalleConsumidorFinal">
-            <td style="text-align: right">Entrega </td>
-            <td style="text-align: right"><input type="text" id="montoPagado" value="<@= montoPagado @>" class="onlyNumbers focusThis" title="Anticipo" style="width: 63px" tabindex = 1 /></td>
-        </tr>
-        <tr class="sinBordeInferior detalleConsumidorFinal">
-            <td style="text-align: right">Su Vuelto </td>
-            <td style="text-align: right"><span id="vuelto"><@= (_.isNaN(vuelto))? "" : vuelto.toFixed(2) @></span></td>
-        </tr>
+        <@ if(aCobrar != 0) { @>
+            <tr class="sinBordeInferior detalleConsumidorFinal">
+                <td style="text-align: right">Entrega </td>
+                <td style="text-align: right"><input type="text" id="montoPagado" value="<@= montoPagado @>" class="onlyNumbers focusThis" title="Anticipo" style="width: 63px" tabindex = 1 /></td>
+            </tr>
+            <tr class="sinBordeInferior detalleConsumidorFinal">
+                <td style="text-align: right">Su Vuelto </td>
+                <td style="text-align: right"><span id="vuelto"><@= (_.isNaN(vuelto))? "" : vuelto.toFixed(2) @></span></td>
+            </tr>
+        <@ } @>
     </table>
     
     

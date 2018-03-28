@@ -15,6 +15,14 @@
             $stmt->bind_param("iiii", $codigoPedido, $codigoCaja, $codigoPedido, $codigoCaja);
             $stmt->execute();
         }
+
+
+        public function delete($codigo) {
+            $stmt = $this->mysql->getStmt("DELETE FROM pedidosCaja WHERE codigoCaja = ?");
+            $stmt -> bind_param("i", $codigo);
+            $stmt -> execute();
+        }
+
     }
 
     

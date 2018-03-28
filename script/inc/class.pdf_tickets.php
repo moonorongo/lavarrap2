@@ -225,7 +225,9 @@
         
         
         public function generateWithServices() {
-            $this->codigo = $this->proveedorModel["prefijoCodigo"] . $this->modelData['codigo'];
+            $codigo = (is_null($this->modelData['codigoTalon']) || empty($this->modelData['codigoTalon']))? $this->modelData['codigo'] : $this->modelData['codigoTalon'];
+
+            $this->codigo = $this->proveedorModel["prefijoCodigo"] . $codigo;
             $this->cliente = $this->modelData['_nombreCliente'];
             $this->aRetirar = swapDateFormat($this->modelData['fechaRetiro']);
             $this->anticipo = $this->modelData['anticipo'];
@@ -242,7 +244,9 @@
         
         
         public function generate() {
-            $this->codigo = $this->proveedorModel["prefijoCodigo"] . $this->modelData['codigo'];
+            $codigo = (is_null($this->modelData['codigoTalon']) || empty($this->modelData['codigoTalon']))? $this->modelData['codigo'] : $this->modelData['codigoTalon'];
+
+            $this->codigo = $this->proveedorModel["prefijoCodigo"] . $codigo;
             $this->cliente = $this->modelData['_nombreCliente'];
             $this->aRetirar = swapDateFormat($this->modelData['fechaRetiro']);
             $this->anticipo = $this->modelData['anticipo'];

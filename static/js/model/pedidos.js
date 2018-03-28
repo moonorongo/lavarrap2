@@ -137,35 +137,46 @@ Pedidos = Backbone.View.extend({
                 m.fetch({
                     success: function(response) {
                         var html = _.template($('#pedidoIncompletoAlertaTemplate').html(), m.toJSON());
-                        wcat.jAlert(html);
+
+                        wcat.jConfirm(html, 
+                            function(){
+                                _this.entregarPedido();
+                            }, 
+                            function(){}, 
+                            {
+                                width: 500,
+                                height: 260,
+                                title: "Alerta!"
+                        }); 
                     }
                 });
                 
             } else {
-                
-                var m = new PedidosModel({codigo : _this.lastRowSelected })
-                m.fetch({
-                    success: function(response) {
-                        
-                        $('#entregarPedidoPopup').dialog({
-                            height: 500,
-                            width: 350,
-                            title: 'Entregar pedido',
-                            resizable: false,
-                            modal: true
-                        });         
-                        
-                        m.set({"montoPagado" : ""});
-                        var entregarPedidoView = new EntregarPedidoView({
-                            model : m
-                        });
-                    } // success
-                }); // fetch;
-                
+                _this.entregarPedido();
             } // if
         },
 
-                
+
+        entregarPedido : function() {
+            var m = new PedidosModel({codigo : this.lastRowSelected })
+            m.fetch({
+                success: function(response) {
+                    
+                    $('#entregarPedidoPopup').dialog({
+                        height: 500,
+                        width: 350,
+                        title: 'Entregar pedido',
+                        resizable: false,
+                        modal: true
+                    });         
+                    
+                    m.set({"montoPagado" : ""});
+                    var entregarPedidoView = new EntregarPedidoView({
+                        model : m
+                    });
+                } // success
+            }); // fetch;
+        },
         
         
         nuevo: function(){
@@ -207,7 +218,7 @@ Pedidos = Backbone.View.extend({
             
             $('#editPedidoPopup').dialog({
                 height: 560,
-                width: 630,
+                width: 730,
                 title: title + tipoPedido,
                 resizable: false,
                 modal: true
@@ -336,6 +347,8 @@ Pedidos = Backbone.View.extend({
 
 
 
+
+
 PedidosModel = Backbone.Model.extend({
     idAttribute : "codigo" ,
   
@@ -348,7 +361,8 @@ PedidosModel = Backbone.Model.extend({
         "anticipo" : 0,
         "_nombreCliente" : "",
         "activo" : 1,
-        "observaciones" : ""
+        "observaciones" : "",
+        "codigoTalon" : '' 
     },
     
     url : function() {
@@ -444,6 +458,11 @@ PedidosModificarView = Backbone.View.extend({
             collection : _this.model.get("listaServicios")
         });
 
+        this.actualizarTotalFactura();
+
+        this.model.get('listaServicios').on("change", function(m) {
+            _this.actualizarTotalFactura();                
+        });
     }, 
 
     events: {
@@ -536,7 +555,20 @@ PedidosModificarView = Backbone.View.extend({
         
         var imprimir = (e.target.id == "imprimir")? true : false,
             soloImprimir = (e.target.id == "soloImprimir")? true : false,
-            listaCantidadCero = [];
+            listaCantidadCero = [],
+            anticipo = (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
+            totalFactura = this.obtenerTotalFactura();
+
+
+
+        if(anticipo > totalFactura) {
+            var diferencia = anticipo - totalFactura;
+            alert("El anticipo es mayor que el total de la factura! \n\r"+
+                  "Se ajustara el anticipo al monto total: $ " + totalFactura +"\n\r"+
+                  "Vuelto a entregar: $ " + diferencia);
+
+            anticipo = totalFactura;
+        }
 
         _this.model.get("listaServicios").each( function(m){ 
             if(m.isNew()) m.set("codigo", -1);
@@ -550,9 +582,10 @@ PedidosModificarView = Backbone.View.extend({
 
         if(_this.model.isNew()) {
             _this.model.set({
+                "codigoTalon" : _this.$('#codigoTalon').val(),
                 "codigoCliente" : _this.$('#codigoCliente').val(),
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
-                "anticipo" : (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
+                "anticipo" : anticipo,
                 "imprimir" : imprimir,
                 "soloImprimir" : soloImprimir,
                 "_nombreCliente" : _this.$('#codigoCliente option:selected').html(),
@@ -560,12 +593,13 @@ PedidosModificarView = Backbone.View.extend({
             }, {silent: true});
         } else {
             _this.model.set({
+                "codigoTalon" : _this.$('#codigoTalon').val(),
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "imprimir" : imprimir,
                 "soloImprimir" : soloImprimir,
                 "_nombreCliente" : _this.$('#searchCliente').val(),
                 "observaciones" : _this.$('#observaciones').val(),
-                "anticipo" : (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val()
+                "anticipo" : anticipo
             }, {silent: true});
         }
 
@@ -608,6 +642,22 @@ PedidosModificarView = Backbone.View.extend({
         var html = _.template($('#pedidosModificarTemplate').html(), this.model.toJSON());
         this.$el.html(html);
         return this; 
+    },
+
+
+    obtenerTotalFactura: function() {
+        var totalFactura = 0;
+
+        this.model.get("listaServicios").each( function(m){ 
+            totalFactura += (m.get('deleted'))? 0 : m.get('_subTotal');
+        });
+
+        return totalFactura;        
+    },
+
+
+    actualizarTotalFactura: function() {
+        $('#totalFactura', this.$el).html(this.obtenerTotalFactura());
     }
     
 });
@@ -630,17 +680,15 @@ EntregarPedidoView = Backbone.View.extend({
         
         _.each(this.model.get("listaServicios").toJSON(), function(s) { 
             totalServicios += s._subTotal; 
-         }) ;
+        }) ;
          
-         this.model.set("totalServicios", totalServicios);
-         this.model.set("aCobrar", totalServicios - this.model.get("anticipo"));
-         this.model.set("vuelto", 0);
+        this.model.set("totalServicios", totalServicios);
+        this.model.set("aCobrar", totalServicios - this.model.get("anticipo"));
+        this.model.set("vuelto", 0);
         
         this.render();
         
         this.$('.focusThis').focus();
-        
-
     }, 
 
     events: {

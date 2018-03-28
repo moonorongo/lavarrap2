@@ -35,6 +35,7 @@
                             <li><a id="rDerivaciones" class="menu-item">Derivaciones</a></li>
                             <li><a id="rServiciosRealizados" class="menu-item">Cant. Servicios</a></li>
                             <li><a id="rListaServicios" class="menu-item">Lista servicios</a></li>
+                            <li><a id="resumenCajaMes" class="menu-item">Resumen Caja Mes</a></li>
                         </ul>
                     </li>
                     <li class="root-menu"><a id="configuracion">Configuraci&oacute;n <i class="icon-angle-down"></i></a> 

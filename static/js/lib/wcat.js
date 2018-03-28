@@ -172,16 +172,7 @@ var
                 if(!_.isUndefined(fechaVigencia)) 
                     aoData.push( { "name": "fechaVigencia", "value": fechaVigencia} );
 
-/*  esta basura no se utiliza...              
-                var entregado = ($('#verEntregado').prop('checked'))? 1:0;
-                if(!_.isUndefined(entregado)) 
-                    aoData.push( { "name": "entregado", "value": entregado } );
-                
-                
-                var fechaPedido = $('#fechaPedidos').val();
-                if(fechaPedido != "" && !_.isUndefined(fechaPedido)) 
-                    aoData.push( { "name": "fechaPedido", "value": wcat.swapDateFormat(fechaPedido)} );
-  */              
+
             }
             
             

@@ -9,14 +9,15 @@ MovimientosCaja = Backbone.View.extend({
 
         this.render();
         
-        var selectedMonth = parseInt(this.$('#month').val()) + 1;
-        var $fecha = this.$('#year').val() +'-'+ selectedMonth +'-01';
+        var selectedMonth = parseInt(this.$('#month').val()) + 1,
+            $fecha = this.$('#year').val() +'-'+ selectedMonth +'-01',
+            search = this.$('#buscarMovientoCaja').val();
 
         var cajaCollection = new CajaCollection();
         wcat.waitDialog();
         cajaCollection.fetch({
             reset: true, 
-            data: {fecha: $fecha},
+            data: {fecha: $fecha, search : search},
             success: function(collection) {
                 wcat.waitDialog(true);
                 _this.collectionView = new Backbone.CollectionView( {
@@ -29,24 +30,30 @@ MovimientosCaja = Backbone.View.extend({
                 _this.showSaldoDeCaja(collection);
             }
         });
-        
 
+        cajaCollection.on("change", function(m) {
+            _this.actualizar();                
+        });
 
     }, // end initialize 
         
     events: {
         "change #month": "actualizar",
-        "change #year": "actualizar"
+        "change #year": "actualizar",
+        "click #actualizarLista" : "actualizar",
+        "change #buscarMovientoCaja" : "actualizar"
     },
 
     actualizar: function(){
-        var _this=this;
-        var selectedMonth = parseInt(this.$('#month').val()) + 1;
-        var $fecha = this.$('#year').val() +'-'+ selectedMonth +'-01';
+        var _this=this,
+            selectedMonth = parseInt(this.$('#month').val()) + 1,
+            $fecha = this.$('#year').val() +'-'+ selectedMonth +'-01',
+            search = this.$('#buscarMovientoCaja').val();
+
         wcat.waitDialog();
         _this.collectionView.collection.fetch({
             reset: true, 
-            data: {fecha: $fecha},
+            data: {fecha: $fecha, search : search},
             success: function(collection){
                 wcat.waitDialog(true);
                 _this.showSaldoDeCaja(collection);
@@ -63,8 +70,13 @@ MovimientosCaja = Backbone.View.extend({
     },
 
     showSaldoDeCaja: function(collection) {
-        var sum = 0;
-        collection.each(function(e){ sum += parseFloat(e.get("monto")) });
+        var sum = 0,
+            search = this.$('#buscarMovientoCaja').val();
+
+        if(search.trim().length == 0) {
+            collection.each(function(e){ sum += parseFloat(e.get("monto")) });
+        }
+        
         this.$('#saldoDeCaja').html(sum.toFixed(2));
     },
 
@@ -95,6 +107,41 @@ CajaRowView = Backbone.View.extend({
     className: function() {
         return (this.model.get("esSaldoInicialMes") == 1)? "saldoInicial" : "";
     },
+    events: {
+        "click .btnEditCaja": "editCaja",
+        "click .btnBorrarCaja": "borrarCaja"
+    },
+
+    editCaja : function(e) {
+        $('#cajaPopup').dialog({
+            height: 235,
+            width: 300,
+            title: 'Editar Movimiento de Caja',
+            resizable: false,
+            modal: true
+        });         
+        
+        var cajaView = new CajaView({model: this.model});
+    },
+
+    borrarCaja : function(e) {
+        var _this = this;
+
+        if(confirm("Esta Seguro?")) {
+            $.ajax({
+                url: 'caja.php?action=deleteCaja',
+                data: {codigo : _this.model.id},
+                success : function(response) {
+                    if(response.success) {
+                        _this.model.collection.remove(_this.model);
+                    } else {
+                        alert("no se pudo borrar el registro");
+                    }
+                }
+            });
+        }
+    },
+
     render : function() {
             var m = this.model.toJSON();
             var html = this.template(m);
@@ -106,20 +153,8 @@ CajaRowView = Backbone.View.extend({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Ingresos/Egresos Caja App
+// y ahora edicion
 CajaView = Backbone.View.extend({
     
     initialize: function() {
@@ -129,19 +164,26 @@ CajaView = Backbone.View.extend({
         this.el = this.$el[0];
 
         this.render();
+        if(_.isUndefined(this.attributes)) {
+            this.attributes = {};
+        }
+
+        this.attributes.codigo = -1;
+
+        if(!_.isUndefined(this.model)) {
+            $('#monto', this.$el).val(this.model.get('monto'));
+            $('#observaciones', this.$el).val(this.model.get('observaciones'));
+            this.attributes.codigo = this.model.id;
+        }
+
         this.$('.focus').focus();
-    
     }, 
 
     events: {
         "click #aceptar": "aceptar",
         "click #cancelar": "cancelar"
     },
-            
-
-            
-            
-
+  
 
     aceptar: function(e){
             e.preventDefault(); // corta la propagacion de eventos.
@@ -167,22 +209,33 @@ CajaView = Backbone.View.extend({
 
             
     saveModel: function(e) {
-        	
-        var _this = this;
+        var _this = this,
+            extraccion = (this.attributes.codigo == -1)? "*EXT*: " : "";
+
+        if(_.isUndefined(this.attributes.sign)) {
+            this.attributes.sign = (this.model.get('model') > 0)? 1 : -1;
+        }
+
+
+
         var data = {
+            "codigo" : this.attributes.codigo,
             "monto": parseFloat(_this.$('#monto').val()),
             "sign": _this.attributes.sign,
-            "observaciones" : "*EXT*: "+ _this.$('#observaciones').val()
+            "observaciones" : extraccion + _this.$('#observaciones').val()
         };
 
         $.ajax({
             url: "caja.php?action=cajaHandler",
             data : {model : JSON.stringify(data)},
             success: function(response){
+                if(!_.isUndefined(_this.model)) {
+                    _this.model.set(data);
+                }
+
                 _this.cancelar();
             }
         })
-
     },
 
 
@@ -207,8 +260,6 @@ CajaView = Backbone.View.extend({
     }
     
 });
-
-
 
 
 

@@ -27,40 +27,6 @@
             return $facturado;            
         }
         
-/* codigo anterior
-        public function reportePrincipalFacturado($fechaInicial, $fechaFinal) {
-            $out = Array();
-            $stmt = $this->mysql->getStmt("SELECT p.codigo, DATE(p.fechaPedido) AS fechaPedido, 
-                (SELECT sum(s.valor * sp.cantidad) FROM serviciosPedidos sp
-                    INNER JOIN servicios s ON sp.codigoServicio = s.codigo
-                    WHERE sp.codigoPedido = p.codigo
-                ) AS facturado
-                FROM pedidos p 
-                WHERE ( p.nombre is null AND p.codigoSucursal = ? AND p.fechaPedido >= ? AND p.fechaPedido <= ADDDATE(?, INTERVAL 1 DAY) ) 
-                ORDER BY p.fechaPedido");
-            
-            
-            $stmt->bind_param("iss",$this->codigoSucursal, $fechaInicial, $fechaFinal);
-            $stmt->execute();
-            
-            $stmt->bind_result($codigo, $fechaPedido, $facturado);
-
-            while($stmt->fetch()) {
-                $tmpRow = array("codigo" => $codigo, 
-                                "fechaPedido" => $fechaPedido,
-                                "facturado" => $facturado
-                    );
-                $out[] = $tmpRow;
-            }
-            
-            $stmt->close();            
-            return $out;
-        }
-        */
-        
-        
-        
-        
         
         public function reporteInsumos($fechaInicial, $fechaFinal) {
             $outConsumidos = Array();
@@ -374,6 +340,10 @@
             return $out;
         }        
         
+
+
+
+
         
         
     }

@@ -200,7 +200,7 @@ ServiciosPedidosModel = Backbone.Model.extend({
   
     defaults : {
         "_descripcion" : "",
-        "cantidad" : "",
+        "cantidad" : 1,
         "codigoServicio" : -1,
         "codigoProveedor": -1,
         "_descripcionProveedor" : "",

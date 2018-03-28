@@ -39,6 +39,7 @@
             
             $pedidos = new Pedidos($mysql);
             $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
+            $codigoImprimir = (is_null($pedidoModel['codigoTalon']) || empty($pedidoModel['codigoTalon']))? $pedidoModel['codigo'] : $pedidoModel['codigoTalon'];
             
             $clientes = new Clientes($mysql);
             $modelCliente = $clientes->get($pedidoModel["codigoCliente"]);
@@ -58,7 +59,7 @@
             $ticket->telefono = $proveedorData['telefono'];
             $ticket->soloControl = false;
             $ticket->anticipo = $pedidoModel["anticipo"];
-            $ticket->codigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
+            $ticket->codigo = $data[0]['_prefijoCodigo'] . $codigoImprimir;
             $ticket->AddPage();
             $ticket->ListTareas($data, $montoPagado);
             $ticket->Output("entrega_". $ticket->codigo .".pdf",'I');                            
@@ -159,7 +160,6 @@
                             $caja = new Caja($mysql);
 
                             if($montoPagado != 0) { 
-                                // $caja->registrarIngreso($montoPagado,"Monto pagado operacion ". $ticketCodigo);
                                 $caja->registrarCajaPedido(
                                     $montoPagado, 
                                     $pedidoModel['codigo'], 
@@ -167,7 +167,6 @@
                             }
                             
                             if($vuelto != 0) {
-                                // $caja->registrarEgreso($vuelto,"Vuelto entregado operacion ". $ticketCodigo);
                                 $caja->registrarCajaPedido(
                                     -abs($vuelto), 
                                     $pedidoModel['codigo'], 

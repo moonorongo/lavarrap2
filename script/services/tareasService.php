@@ -47,16 +47,15 @@
                             $_descripcionDerivacion = "Derivado desde ". $row["_descripcionSucursal"];
                         }
                     }
-
-                    //if($row['codigoEstado'] != 0) $_descripcionEstado = $row["_descripcionEstado"];
                 }
                 
                 $_descripcionEstado = $row["_descripcionEstado"];
-                
+                $columnaCodigo = (is_null($row["codigoTalon"]) || empty($row["codigoTalon"]))? '('.str_pad($row["codigoPedido"], 8, '0', STR_PAD_LEFT).')' : str_pad($row["codigoTalon"], 8, '0', STR_PAD_LEFT);
+
                 $newRow = Array(
                     "DT_RowId" => $row["codigo"],
                     "DT_RowClass" => $classDerivacion,
-                    "0" =>  $row['prefijoCodigo']. str_pad($row['codigoPedido'], 8, '0', STR_PAD_LEFT),
+                    "0" =>  $row['prefijoCodigo']. $columnaCodigo,
                     "1" => $row["_fechaRetiro"],
                     "2" => $row["cantidad"] ." x ". $row["_descripcionServicio"],
                     "3" => $_descripcionDerivacion,

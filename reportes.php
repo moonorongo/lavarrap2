@@ -35,7 +35,8 @@
                             "rCumpleanos" => "Cumpleaños",
                             "rConsumos" => "Consumos realizados",
                             "exportarListaClientes" => "Listado Clientes",
-                            "cajaFacturado" =>  "Caja contra facturado"
+                            "cajaFacturado" =>  "Caja contra facturado",
+                            "resumenCajaMes" => "Resumen Caja Mes"
                             );
         ?>
     <table>
@@ -351,7 +352,49 @@
                       </tr>';
         } // if cajaFacturado
 
-        
+
+        // Resumen Caja Mes
+        if($action == 'resumenCajaMes') {
+            $fecha  = "$fechaFinal-$fechaInicial-01"; // fechaInicial = month, fechaFinal = year... :(
+            $out = $caja->listEgresosMes($fecha);
+            $totalIngresos = 0;
+            $totalEgresos = 0;
+            ?>
+            <table>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Ingreso</th>
+                    <th>Egreso</th>
+                    <th>Observaciones</th>
+                </tr>
+
+            <?php foreach($out as $item) { ?>
+                <tr>
+                    <td><?= swapDateFormat(explode(' ', $item['fecha'])[0]); ?></td>
+                    <td><?= ($item['monto'] > 0)? $item['monto'] : '' ?></td>
+                    <td><?= ($item['monto'] < 0)? abs($item['monto']) : '' ?></td>
+                    <td><?= utf8_decode($item['observaciones']); ?></td>
+                </tr>
+            <?php 
+                if($item['monto'] > 0) {
+                    $totalIngresos += $item['monto'];
+                } else {
+                    $totalEgresos += abs($item['monto']);
+                }
+            } //  end foreach 
+            ?>
+            <tr>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td>TOTALES:</td>
+                <td><?= $totalIngresos ?></td>
+                <td><?= $totalEgresos ?></td>
+                <td></td>
+            </tr>
+            <?php
+        } // if resumenCajaMes
+
         $mysql->close();    
     } // if logged    
 ?>
