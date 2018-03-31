@@ -1,4 +1,5 @@
 <?php 
+    // echo('<h1>Temporariamente deshabilitado - Actualizando el sistema</h1>'); die();
     session_start();
     
     if(!isset($_SESSION['LOGGED'])) {

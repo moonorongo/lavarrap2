@@ -730,7 +730,7 @@ EntregarPedidoView = Backbone.View.extend({
             
             var montoEntregado = this.$("#montoPagado").val();
 
-            if(_.isEmpty(montoEntregado) || this.model.get("vuelto") < 0 || !wcat.validate.number.test(montoEntregado)) {
+            if( (this.model.get("aCobrar") != 0) && (_.isEmpty(montoEntregado) || this.model.get("vuelto") < 0 || !wcat.validate.number.test(montoEntregado)) ) {
 
                 wcat.jAlert("Debe ingresar un monto, igual o superior a lo que hay que cobrar!");
                 $(e.target).attr({ disabled : false });

@@ -370,7 +370,7 @@
 
             <?php foreach($out as $item) { ?>
                 <tr>
-                    <td><?= swapDateFormat(explode(' ', $item['fecha'])[0]); ?></td>
+                    <td><?= $item['fecha'] ?></td>
                     <td><?= ($item['monto'] > 0)? $item['monto'] : '' ?></td>
                     <td><?= ($item['monto'] < 0)? abs($item['monto']) : '' ?></td>
                     <td><?= utf8_decode($item['observaciones']); ?></td>

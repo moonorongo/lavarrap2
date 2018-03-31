@@ -71,7 +71,7 @@
                     AND codigoSucursal = $this->codigoSucursal ORDER BY fecha";
             } else {
                 $sql = "SELECT * FROM caja 
-                        WHERE observaciones LIKE '%$search%'
+                        WHERE UPPER(observaciones) LIKE UPPER('%$search%')
                         AND codigoSucursal = $this->codigoSucursal ORDER BY fecha LIMIT 1000";
             }
                 

@@ -5,7 +5,7 @@
     class Pedidos {
         
         private $mysql = null;
-        private $columns = Array("p.codigo", "c.nombres","c.apellido");
+        private $columns = Array("p.codigo", "p.codigoTalon", "c.nombres", "c.apellido");
         private $codigoSucursal = null;
         private $log = null;
 
@@ -165,7 +165,7 @@
             $searchCondition = " ( ";
             foreach ($this->columns as $key => $value) {
                 $or = ($key == 0)? " ":" OR ";
-                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
+                $searchCondition .= $or ."( UPPER(". $value .") LIKE UPPER('%". $sSearch ."%') ) ";
             }
             $searchCondition .= " ) ";
             
@@ -222,18 +222,6 @@
 
     
         public function getPagedSortedTemplates($sSearch, $start, $length) {
-/*
-            $sSearch = strtoupper($sSearch);
-            // Armo query busqueda en base a configuracion columns
-            $searchCondition = " ( ";
-            foreach ($this->columns as $key => $value) {
-                $or = ($key == 0)? " ":" OR ";
-                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
-            }
-            $searchCondition .= " ) ";
-            
-            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
-*/       
             $out = Array();
             
             $sql =  "SELECT 
@@ -266,16 +254,6 @@
 
         public function countTemplates($sSearch) {
             $out = -1;
-/*            
-            $searchCondition = " ( ";
-            foreach ($this->columns as $key => $value) {
-                $or = ($key == 0)? " ":" OR ";
-                $searchCondition .= $or ."(UPPER(". $value .") LIKE '%". $sSearch ."%') ";
-            }
-            $searchCondition .= " ) ";
-            
-            $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
-*/            
             $sql = 
                 "SELECT 
                    count(p.codigo) AS total
