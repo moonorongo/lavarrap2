@@ -11,7 +11,7 @@
         header('Content-Type: application/json');
 
         Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
-        $logger = Logger::getLogger('rootLogger');
+        $logger = Logger::getLogger('fileLogger');
     
         global $_SUCURSAL;    
         
@@ -154,7 +154,7 @@
                             $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado); // 4
                             
                             $data = $tareasService->get($tareasSeleccionadas);
-                            $ticketCodigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'];
+                            $ticketCodigo = $data[0]['_prefijoCodigo'] . $data[0]['codigoPedido'] . ' - Codigo: ' . $data[0]['codigoTalon'];
                             
                             // registro el movimiento en caja
                             $caja = new Caja($mysql);

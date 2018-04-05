@@ -6,12 +6,14 @@
         private $serviciosPedidos = null;
         private $servicios = null;
         private $proveedores = null;
+        private $caja = null;
 
-        function __construct($pedidos, $serviciosPedidos, $servicios, $proveedores) {
+        function __construct($pedidos, $serviciosPedidos, $servicios, $proveedores, $caja = null) {
             $this->pedidos = $pedidos;
             $this->serviciosPedidos = $serviciosPedidos;
             $this->servicios = $servicios;
             $this->proveedores = $proveedores;
+            $this->caja = $caja;
         }
     
         
@@ -92,10 +94,9 @@
         
         
         
-        
-        
         public function delete($codigo) {
             $this->serviciosPedidos->deleteByCodigoPedido($codigo);
+            $this->caja->deleteByCodigoPedido($codigo);
             $this->pedidos->delete($codigo);
         }
         

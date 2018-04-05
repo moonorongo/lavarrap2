@@ -2,3 +2,5 @@
  REQUEST: action=tareasHandler, codigoPedido=71467, codigoEstado=4, montoPagado=61, vuelto=1  - SESSION: LOGGED=1, SUCURSAL=8, ADMIN=1, DESCRIPCION=Sucursal Belgrano 
 2018-03-15T23:10:57+01:00 rootLogger WARN  /home/mauro/Documentos/trabajos/web/lavarrap/web/tareas.php - en linea 131 : Se intento re-entregar el pedido 71467
  REQUEST: action=tareasHandler, codigoPedido=71467, codigoEstado=4, montoPagado=60, vuelto=0  - SESSION: LOGGED=1, SUCURSAL=8, ADMIN=1, DESCRIPCION=Sucursal Belgrano 
+2018-03-31T22:54:02+02:00 fileLogger WARN  /home/mauro/Documentos/trabajos/web/lavarrap/web/caja.php - en linea 82 : NO AUTORIZADO - debe ser administrador para ingresar
+ REQUEST:   - SESSION: LOGGED=1, SUCURSAL=1, ADMIN=0, DESCRIPCION=Sucursal Villa Mitre 

@@ -20,10 +20,12 @@
         $action = (isset($_REQUEST["action"]))? $_REQUEST["action"] : null;
 
         $proveedores = new Proveedores($mysql);
+        $caja = new Caja($mysql);
         $pedidosService = new PedidosService(new Pedidos($mysql), 
                                             new ServiciosPedidos($mysql), 
                                             new Servicios($mysql), 
-                                            $proveedores); 
+                                            $proveedores,
+                                            $caja); 
         
         $proveedorModel = $proveedores->get($_SUCURSAL);
         
@@ -84,11 +86,12 @@
                 if($modelData["nombre"] == "") {
                     $anticipo = floatval($modelData['anticipo']);
                     if($anticipo != 0) {
-                        $caja = new Caja($mysql);
+                        
                         $caja->registrarCajaPedido(
                             $anticipo, 
                             $modelData['codigo'], 
-                            "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
+                            "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
+                            " - Codigo Talon: ". $modelData['codigoTalon']);
                     }
                 }
                 
@@ -134,11 +137,11 @@
                         $diferenciaRegistrar = $anticipo - $oldModelData["anticipo"];
 
                         if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
-                            $caja = new Caja($mysql);
                             $caja->registrarCajaPedido(
                                 $diferenciaRegistrar, 
                                 $modelData['codigo'], 
-                                "Correccion anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo']);
+                                "Correccion anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
+                                " - Codigo Talon: ". $modelData['codigoTalon']);
                         }
                     }
                 } else {

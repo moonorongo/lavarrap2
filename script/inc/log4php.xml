@@ -1,14 +1,39 @@
 <configuration xmlns="http://logging.apache.org/log4php/">
-    <appender name="mainAppender" class="LoggerAppenderRollingFile">
+<!-- APPENDERS -->    
+    <appender name="rollinFileAppender" class="LoggerAppenderRollingFile">
         <layout class="LoggerLayoutPattern">
             <param name="conversionPattern" value="%date %logger %-5level %file - en linea %line : %msg%n REQUEST: %request  - SESSION: %session %n" />
         </layout>
-        <param name="file" value="/home/mauro/Documentos/trabajos/web/lavarrap/web/script/log/lavarrap.log" />
+        <param name="file" value="/home/mauro/Documentos/trabajos/web/lavarrap/web/script/log/lavarrap.log" /> 
+<!--            <param name="file" value="script/log/lavarrap.log" /> -->
         <param name="maxFileSize" value="512KB" />
         <param name="maxBackupIndex" value="10" />        
     </appender>
-    <root>
+
+    <appender name="databaseAppender" class="LoggerAppenderPDO">
+        <!-- LOCAL -->
+        <param name="dsn" value="mysql:host=localhost;dbname=lavarrap" />
+        <param name="user" value="root" />
+        <param name="password" value="" />
+        <param name="table" value="log4php_log" />
+        <!-- ONLINE -->
+        <!--
+        <param name="dsn" value="mysql:host=localhost;dbname=moonorongo_lavaya" />
+        <param name="user" value="moonorongo_lava" />
+        <param name="password" value="ma124oc1974" />
+        <param name="table" value="log4php_log" />
+        -->
+    </appender>
+
+<!-- LOGGERS -->    
+    <logger name="fileLogger">
         <level value="WARN" />
-        <appender_ref ref="mainAppender" />
-    </root>
+        <appender_ref ref="rollinFileAppender" />
+    </logger>
+
+    <logger name="databaseLogger">
+        <level value="INFO" />
+        <appender_ref ref="databaseAppender" />
+    </logger>
+
 </configuration>

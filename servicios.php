@@ -42,30 +42,6 @@
 
             $fechaVigencia = (isset($_REQUEST["fechaVigencia"]))? $_REQUEST["fechaVigencia"] : null;
             $serviciosService->nuevaFechaVigencia($fechaVigencia);
-
-/* esto corregiria algo que no es necesario corregir... asi que a la merda...
-            $servicios = new Servicios($mysql);
-            $pedidosService = new PedidosService( new Pedidos($mysql), 
-                    new ServiciosPedidos($mysql), 
-                    $servicios, 
-                    new Proveedores($mysql));
-  
-            $listaPlantillas = $pedidosService->listTemplates();
-            foreach($listaPlantillas as $plantilla) {
-                // de cada plantilla listo los servicios
-                // de cada servicioPedido,  busco POR NOMBRE el sevicio con nuevo precio
-                // y actualizo el codigoServicio por el del nuevo que obtuve.
-                $a = $plantilla;
-                foreach($plantilla["listaServicios"] as $s) {
-                    $servicioActualizado = $servicios->getByDescripcion($s["_descripcion"]);
-                    $s["codigoServicio"] = $servicioActualizado["codigo"];
-                    // aca, con $s modificado, actualizarlo...
-                }
-                
-            }
-*/
-            
-            
             echo '{ "success" : true }';
         }
         

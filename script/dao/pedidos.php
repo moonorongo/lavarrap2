@@ -1,18 +1,12 @@
 <?php
-    require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php/Logger.php");
-    Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
-
     class Pedidos {
         
         private $mysql = null;
         private $columns = Array("p.codigo", "p.codigoTalon", "c.nombres", "c.apellido");
         private $codigoSucursal = null;
-        private $log = null;
 
-                
         function __construct($mysql) {
             global $_SUCURSAL;
-            $this->log = Logger::getLogger('rootLogger');
             $this->codigoSucursal = $_SUCURSAL;
             $this->mysql = $mysql;
         }

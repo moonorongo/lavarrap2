@@ -12,6 +12,7 @@
     <script src="static/js/model/insumos.js"></script>
     <script src="static/js/model/movimientosCaja.js"></script>
     <script src="static/js/model/reportes.js"></script>
+    <script src="static/js/model/logCaja.js"></script>
 <?php } ?>
 
 </body>

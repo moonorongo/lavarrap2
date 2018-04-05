@@ -14,6 +14,8 @@
     
     if($userData['LOGGED'] == 1) {
         $_SESSION['LOGGED'] = $userData['LOGGED'];
+        $_SESSION['USER'] = $user;
+        $_SESSION['USER_IP'] = $_SERVER['REMOTE_ADDR'];
         $_SESSION['SUCURSAL'] = $userData['SUCURSAL'];
         $_SESSION['ADMIN'] = $userData['ADMIN'];
         $_SESSION['DESCRIPCION'] = $userData['DESCRIPCION'];

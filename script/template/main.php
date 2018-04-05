@@ -45,6 +45,7 @@
                             <li><a id="insumos" class="menu-item">Insumos</a></li>
                             <li><a>Caja <i class="icon-angle-right"></i></a>
                                 <ul>
+                                    <li><a id="logCaja" class="menu-item">Ver log de Caja</a></li>
                                     <li><a id="ingresoCaja" class="menu-item">Registrar ingreso</a></li>
                                     <li><a id="egresoCaja" class="menu-item">Registrar egreso</a></li>
                                     <li><a id="cerrarCajaMes" class="menu-item">Cerrar Caja Mes</a></li> 
