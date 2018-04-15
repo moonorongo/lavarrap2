@@ -8,6 +8,8 @@
         echo ('NO AUTORIZADO: click <a href="http://'. $_SERVER['SERVER_NAME'] .'">aqui</a> para entrar');
     } else { // si esta logueado
         require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/config.php");
+        require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php/Logger.php");
+        
         header('Content-Type: application/json');
 
         Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
