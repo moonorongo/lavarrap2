@@ -368,11 +368,13 @@
                     <th>Observaciones</th>
                 </tr>
 
-            <?php foreach($out as $item) { ?>
+            <?php foreach($out as $item) { 
+                $monto = str_replace('.', ',', $item['monto']);
+            ?>
                 <tr>
                     <td><?= $item['fecha'] ?></td>
-                    <td><?= ($item['monto'] > 0)? $item['monto'] : '' ?></td>
-                    <td><?= ($item['monto'] < 0)? abs($item['monto']) : '' ?></td>
+                    <td><?= ($item['monto'] > 0)? $monto : '' ?></td>
+                    <td><?= ($item['monto'] < 0)? $monto : '' ?></td>
                     <td><?= utf8_decode($item['observaciones']); ?></td>
                 </tr>
             <?php 
@@ -388,8 +390,8 @@
             </tr>
             <tr>
                 <td>TOTALES:</td>
-                <td><?= $totalIngresos ?></td>
-                <td><?= $totalEgresos ?></td>
+                <td><?= str_replace('.', ',', $totalIngresos)  ?></td>
+                <td><?= str_replace('.', ',', $totalEgresos) ?></td>
                 <td></td>
             </tr>
             <?php

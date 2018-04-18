@@ -67,7 +67,7 @@
         <td style="text-align: right">&nbsp;</td>
     <@ } @>
     <td style="text-align: left"><@= observaciones @></td>
-    <td style="text-align: center; display: none"><button data-id-caja="<@= codigo @>" class="btnEditCaja">Editar</button> | <button data-id-caja="<@= codigo @>" class="btnBorrarCaja">Borrar</button></td>
+    <td style="text-align: center;"><button data-id-caja="<@= codigo @>" class="btnEditCaja">Editar</button> | <button data-id-caja="<@= codigo @>" class="btnBorrarCaja">Borrar</button></td>
 </script>
 
 

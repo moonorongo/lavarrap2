@@ -16,12 +16,17 @@
         <param name="user" value="root" />
         <param name="password" value="" />
         <param name="table" value="log4php_log" />
+        <param name="insertSql" value="INSERT INTO __TABLE__ (timestamp, logger, level, message, thread, file, line, sucursal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)" />
+        <param name="insertPattern" value="%date{Y-m-d H:i:s},%logger,%level,%message,%pid,%file,%line,%session{SUCURSAL}" />
+
         <!-- ONLINE -->
         <!--
         <param name="dsn" value="mysql:host=localhost;dbname=moonorongo_lavaya" />
         <param name="user" value="moonorongo_lava" />
         <param name="password" value="ma124oc1974" />
         <param name="table" value="log4php_log" />
+        <param name="insertSql" value="INSERT INTO __TABLE__ (timestamp, logger, level, message, thread, file, line, sucursal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)" />
+        <param name="insertPattern" value="%date{Y-m-d H:i:s},%logger,%level,%message,%pid,%file,%line,%session{SUCURSAL}" />
         -->
     </appender>
 

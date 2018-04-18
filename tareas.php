@@ -35,6 +35,41 @@
             echo json_encode($out);
         }
 
+
+        if($action == 'soloPrintTicketHandler') {
+            $pedidos = new Pedidos($mysql);
+            $totalFactura = $_REQUEST["totalFactura"];
+
+            $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
+            $montoPagado = $totalFactura - $pedidoModel["anticipo"];
+
+            $codigoImprimir = (is_null($pedidoModel['codigoTalon']) || empty($pedidoModel['codigoTalon']))? $pedidoModel['codigo'] : $pedidoModel['codigoTalon'];
+            
+            $clientes = new Clientes($mysql);
+            $modelCliente = $clientes->get($pedidoModel["codigoCliente"]);
+
+            $listaTareas = $serviciosPedidos->getByCodigoPedido($_REQUEST["codigoPedido"]);
+            $tareasSeleccionadas = Array();
+            
+            forEach($listaTareas as $tarea) {
+                $tareasSeleccionadas[] = $tarea["codigo"];
+            }
+
+            $data = $tareasService->get($tareasSeleccionadas);
+            $ticket = new Ticket("P","mm",array(105,148));
+            $ticket->modelCliente = $modelCliente;
+            $ticket->direccion = $proveedorData['direccion'];
+            $ticket->zona = $proveedorData['zona'];
+            $ticket->telefono = $proveedorData['telefono'];
+            $ticket->soloControl = false;
+            $ticket->anticipo = $pedidoModel["anticipo"];
+            $ticket->codigo = $data[0]['_prefijoCodigo'] . $codigoImprimir;
+            $ticket->AddPage();
+            $ticket->ListTareas($data, $montoPagado); 
+            $ticket->Output("entrega_". $ticket->codigo .".pdf",'I');                            
+        } // end soloPrintTicketHandler
+
+
         if($action == 'printTicketHandler') {
             $montoPagado = floatval($_REQUEST["montoPagado"]);
             $vuelto = floatval($_REQUEST["vuelto"]);

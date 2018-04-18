@@ -559,7 +559,13 @@ PedidosModificarView = Backbone.View.extend({
             anticipo = (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
             totalFactura = this.obtenerTotalFactura();
 
-
+            if(soloImprimir) {
+                window.open("tareas.php?action=soloPrintTicketHandler&codigoPedido="+ _this.model.id
+                            + "&totalFactura=" + totalFactura, 
+                            "Imprimir Entrega pedido",
+                            "directories=0, height=600, location=0, menubar=0, width=500");
+                return;
+            }
 
         if(anticipo > totalFactura) {
             var diferencia = anticipo - totalFactura;

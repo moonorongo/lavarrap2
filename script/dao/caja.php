@@ -273,6 +273,7 @@
                     WHERE (1 = 1)
                       AND $whereFecha
                       AND $aBuscar 
+                      AND sucursal = $this->codigoSucursal
                     ORDER BY timestamp DESC
                     LIMIT $start, $length";
 
