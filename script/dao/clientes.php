@@ -45,17 +45,19 @@
                    " fechaNacimiento = ? , ".
                    " tieneCuentaCorriente = ? , ".
                    " codigoSucursal = ? , ".                    
+                   " email = ? , ".                    
                    " telefono = ? ".
                    " WHERE codigo = ? ";
             
             $stmt = $this->mysql->getStmt($sql);
-            $stmt -> bind_param("ssssiisi", 
+            $stmt -> bind_param("ssssiissi", 
                     $modelData['nombres'],
                     $modelData['apellido'],
                     $modelData['direccion'],
                     $modelData['fechaNacimiento'],
                     $modelData['tieneCuentaCorriente'],
                     $this->codigoSucursal, 
+                    $modelData['email'],
                     $modelData['telefono'],
                     $modelData['codigo']);
             
@@ -76,11 +78,11 @@
         
         public function get($codigo) {
 
-            $stmt = $this->mysql->getStmt("SELECT nombres, apellido, direccion, telefono, fechaNacimiento, tieneCuentaCorriente FROM clientes WHERE codigo = ?");
+            $stmt = $this->mysql->getStmt("SELECT nombres, apellido, direccion, telefono, fechaNacimiento, tieneCuentaCorriente, email FROM clientes WHERE codigo = ?");
             $stmt->bind_param("i",$codigo);
             $stmt->execute();
             
-            $stmt->bind_result($nombres, $apellido, $direccion, $telefono, $fechaNacimiento, $tieneCuentaCorriente);
+            $stmt->bind_result($nombres, $apellido, $direccion, $telefono, $fechaNacimiento, $tieneCuentaCorriente, $email);
 
             $stmt->fetch();
             $out = array("codigo" => $codigo,
@@ -89,6 +91,7 @@
                            "direccion" => $direccion,
                            "telefono" => $telefono,
                            "fechaNacimiento" => $fechaNacimiento,
+                           "email" => $email,
                            "tieneCuentaCorriente" => $tieneCuentaCorriente);
             $stmt->close();            
             return $out;

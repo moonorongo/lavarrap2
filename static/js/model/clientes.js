@@ -50,8 +50,8 @@ Clientes = Backbone.View.extend({
             var _this = this;
             
             $('#editClientePopup').dialog({
-                height: 285,
-                width: 330,
+                height: 330,
+                width: 380,
                 title: title +' cliente',
                 resizable: false,
                 modal: true
@@ -108,6 +108,7 @@ ClientesModel = Backbone.Model.extend({
         "direccion" : "",
         "telefono" : "",
         "fechaNacimiento" : "",
+        "email" : "",
         "desdePedido" : false,
         "tieneCuentaCorriente" : 0
     },
@@ -204,6 +205,7 @@ ClientesModificarView = Backbone.View.extend({
             "apellido": $('#apellido', this.$el).val(),
             "direccion": $('#direccion', this.$el).val(),
             "telefono": $('#telefono', this.$el).val(),
+            "email": $('#email', this.$el).val(),
             "fechaNacimiento": wcat.swapDateFormat($('#fechaNacimiento', this.$el).val()),
             "tieneCuentaCorriente" : (this.$('#tieneCuentaCorriente').prop('checked'))? 1:0
         }, {silent: true});

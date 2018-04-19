@@ -45,9 +45,13 @@
         <label for="telefono">Tel&eacute;fono </label>
         <input type="text" id="telefono" value="<@= telefono @>" class="obligatorio" title="Telefono" tabindex="4" style="margin: 4px 0;" />
         <br />
+
+        <label for="email">Email </label>
+        <input type="text" id="email" value="<@= email @>" class="obligatorio" title="Email" tabindex="5" style="margin: 4px 0;" />
+        <br />
         
         <label for="fechaNacimiento">Cumplea&ntilde;os </label>
-        <input type="text" id="fechaNacimiento" value="<@= (!_.isEmpty(fechaNacimiento))? wcat.swapDateFormat(fechaNacimiento) : '' @>" class="obligatorio submitOnEnter" title="Fecha de nacimiento" tabindex="5" style="margin: 4px 0;" />
+        <input type="text" id="fechaNacimiento" value="<@= (!_.isEmpty(fechaNacimiento))? wcat.swapDateFormat(fechaNacimiento) : '' @>" class="obligatorio submitOnEnter" title="Fecha de nacimiento" tabindex="6" style="margin: 4px 0;" />
         <br />
         
         <input type="checkbox" id="tieneCuentaCorriente" <@= (tieneCuentaCorriente == 1)? "checked":"" @> /> tiene Cuenta Corriente

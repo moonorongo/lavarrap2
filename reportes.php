@@ -256,6 +256,7 @@
                     <th>Direccion</th>
                     <th>Telefono</th>
                     <th>Fecha de Nacimiento</th>
+                    <th>Email</th>
                 </tr>
 
             <?php foreach($out as $item) { ?>
@@ -264,6 +265,7 @@
                     <td><?= utf8_decode($item['direccion']); ?></td>
                     <td><?= utf8_decode($item['telefono']); ?></td>
                     <td><?= $item['fechaNacimiento']; ?></td>
+                    <td><?= utf8_decode($item['email']); ?></td>
                 </tr>
             <?php } 
         } // if exportarListaClientes

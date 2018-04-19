@@ -317,7 +317,7 @@
             $out = Array();
             
             $stmt = $this->mysql->getStmt("
-                SELECT CONCAT_WS(', ', apellido, nombres) as nombresApellido, direccion, telefono, fechaNacimiento FROM clientes
+                SELECT CONCAT_WS(', ', apellido, nombres) as nombresApellido, direccion, telefono, fechaNacimiento, email FROM clientes
                 WHERE codigoSucursal = ? AND activo = 1
                 ORDER BY apellido 
             ");
@@ -325,13 +325,14 @@
             $stmt->bind_param("i",$this->codigoSucursal);
             $stmt->execute();
             
-            $stmt->bind_result($nombresApellido, $direccion, $telefono, $fechaNacimiento);
+            $stmt->bind_result($nombresApellido, $direccion, $telefono, $fechaNacimiento, $email);
 
             while($stmt->fetch()) {
                 $tmpRow = array("nombresApellido" => $nombresApellido, 
                                 "direccion" => $direccion,
                                 "telefono" => $telefono,
                                 "fechaNacimiento" => ($fechaNacimiento != null)? swapDateFormat($fechaNacimiento) : "",
+                                "email" => $email
                     );
                 $out[] = $tmpRow;
             }
