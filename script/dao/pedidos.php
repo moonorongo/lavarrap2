@@ -70,7 +70,8 @@
                   p.nombre, 
                   p.observaciones,
                   p.entregado,
-                  p.codigoTalon
+                  p.codigoTalon,
+                  c.tieneCuentaCorriente
                 FROM pedidos p 
                 LEFT JOIN clientes c ON p.codigoCliente = c.codigo 
                 WHERE p.codigo = ?");
@@ -86,7 +87,8 @@
                                   $nombre, 
                                   $observaciones, 
                                   $entregado,
-                                  $codigoTalon);
+                                  $codigoTalon,
+                                  $tieneCuentaCorriente);
             
             $stmt -> fetch();
             $out = array("codigo" => $codigo,
@@ -99,7 +101,8 @@
                            "nombre" => $nombre,
                            "observaciones" => $observaciones,
                            "entregado" => $entregado,
-                           "codigoTalon" => $codigoTalon
+                           "codigoTalon" => $codigoTalon,
+                           "tieneCuentaCorriente" => $tieneCuentaCorriente
                           );
             
             $stmt -> close();
@@ -172,10 +175,11 @@
                         (SELECT count(codigoProveedor) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoProveedor is not null) AS _cantDerivaciones,
                         (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo AND codigoEstado > 2)  AS _cantProcesado,
                         (SELECT count(codigo) FROM serviciosPedidos WHERE codigoPedido = p.codigo)  AS _cantTotal,
-                        pr.prefijoCodigo, c.direccion , p.codigoTalon
+                        pr.prefijoCodigo, c.direccion , p.codigoTalon, cc.codigo as codigoCuentaCorriente
                     FROM  pedidos p 
                     INNER JOIN clientes c ON p.codigoCliente = c.codigo 
                     INNER JOIN proveedores pr ON p.codigoSucursal = pr.codigo
+                    LEFT JOIN cuentaCorriente cc ON cc.codigoPedido = p.codigo
                     WHERE 
                       p.codigoSucursal = $this->codigoSucursal 
                       AND p.entregado = $entregado 
@@ -189,7 +193,7 @@
 
             $stmt = $this->mysql->getStmt($sql);
             $stmt -> execute();
-            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion, $codigoTalon);
+            $stmt -> bind_result($codigo, $fechaPedido, $nombres, $apellido, $telefono, $fechaRetiro, $_cantDerivaciones, $_cantProcesado, $_cantTotal, $prefijoCodigo, $direccion, $codigoTalon, $codigoCuentaCorriente);
             
             while($stmt -> fetch()) {
                 $tmpRow = array("codigo" => $codigo,
@@ -203,7 +207,8 @@
                            "_cantTotal" => $_cantTotal,
                            "prefijoCodigo" => $prefijoCodigo,
                            "direccion" => $direccion,
-                           "codigoTalon" => $codigoTalon
+                           "codigoTalon" => $codigoTalon,
+                           "codigoCuentaCorriente" => $codigoCuentaCorriente
                           );
                 $out[] = $tmpRow;
             }

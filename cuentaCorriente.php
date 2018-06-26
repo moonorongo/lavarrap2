@@ -34,10 +34,6 @@
 
         if($action=="ingresarPago") {
             $codigoCliente = $_REQUEST["codigoCliente"];
-/*            
-            $year = $_REQUEST["year"];
-            $month = $_REQUEST["month"] + 1;
-*/            
             $cantidad = intval($_REQUEST["cantidad"]);
             $cantidadTotal = $cantidad;
             $listaPedidos = $cuentaCorriente->listAll($codigoCliente); // al no poner fecha, lista solo los impagos
@@ -80,7 +76,10 @@
             
             $model = json_decode($model);
             $success = $cuentaCorrienteService->actualizarSaldo($model, $codigoCliente);
-            if($success) $caja->registrarIngreso($model->cantidad,"Ingreso CC cliente ". $codigoCliente);
+
+            if($success && ($model->cantidad != 0)) {
+                $caja->registrarIngreso($model->cantidad,"Ingreso CC cliente ". $codigoCliente);
+            } 
             
             echo '{"success" : '. $success .' }';
         } // confirmarIngresarPago
@@ -94,8 +93,8 @@
             $codigoCliente = $_REQUEST["codigoCliente"];
             $cantidad = intval($_REQUEST["cantidad"]);
             $cuentaCorrienteService->corregirSaldo( $cantidad, $codigoCliente);
-// VER SI ESTO es conveniente hacerlo... deberia...            
-            if($cantidad > 0) {
+
+            if($cantidad < 0) {
                 $caja->registrarIngreso($cantidad,"Correccion CC cliente ". $codigoCliente);
             } else {
                 $caja->registrarEgreso($cantidad,"Correccion CC cliente ". $codigoCliente);

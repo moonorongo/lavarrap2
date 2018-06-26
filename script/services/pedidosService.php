@@ -42,7 +42,8 @@
                     "4" => $row["telefono"],
                     "5" => $row["fechaRetiro"],
                     "6" => ($row["_cantDerivaciones"] > 0)? '<i class="icon-exclamation-sign"></i>':'',
-                    "7" => number_format(($row["_cantProcesado"] / $row["_cantTotal"]) * 100, 2)
+                    "7" => number_format(($row["_cantProcesado"] / $row["_cantTotal"]) * 100, 2),
+                    "8" => (empty($row['codigoCuentaCorriente']))? '' : 'CC'
                 );
                 $out["aaData"][] = $newRow;
             }

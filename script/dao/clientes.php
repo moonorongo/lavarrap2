@@ -159,7 +159,7 @@
                     $apellido = $term;
                 }
                 
-                $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido FROM clientes WHERE 
+                $stmt = $this->mysql->getStmt("SELECT codigo, nombres, apellido, tieneCuentaCorriente FROM clientes WHERE 
                     ((REPLACE(nombres, ' ', '') LIKE ?) OR (REPLACE(apellido, ' ', '') LIKE ?)) 
                     AND activo = 1
                     AND codigoSucursal = ". $this->codigoSucursal);
@@ -173,11 +173,12 @@
 
                 $stmt->execute();
 
-                $stmt->bind_result($codigo, $nombres, $apellido);
+                $stmt->bind_result($codigo, $nombres, $apellido, $tieneCuentaCorriente);
 
                 while($stmt->fetch()) {
                     $tmpRow = array("id" => $codigo,
-                               "value" => $nombres ." ". $apellido);
+                               "value" => $nombres ." ". $apellido,
+                               "tieneCuentaCorriente" => $tieneCuentaCorriente);
                     $out[] = $tmpRow;
                 }
 

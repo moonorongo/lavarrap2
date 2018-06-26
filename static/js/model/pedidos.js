@@ -360,6 +360,7 @@ PedidosModel = Backbone.Model.extend({
         "listaServicios" : null,
         "anticipo" : 0,
         "_nombreCliente" : "",
+        "tieneCuentaCorriente" : false,
         "activo" : 1,
         "observaciones" : "",
         "codigoTalon" : '' 
@@ -422,6 +423,8 @@ PedidosModificarView = Backbone.View.extend({
               minLength: 3,
               delay: 500,
               select: function( event, ui ) {
+                console.log(ui);
+
                 _this.$("#codigoCliente option").remove();
                 _this.$("#codigoCliente").append('<option value="'+ ui.item.id +'" selected>'+ ui.item.value +'</option>');
               },
@@ -550,14 +553,15 @@ PedidosModificarView = Backbone.View.extend({
 
             
     saveModel: function(e) {
-        	
-        var _this = this;
-        
-        var imprimir = (e.target.id == "imprimir")? true : false,
+        var _this = this,
+            imprimir = (e.target.id == "imprimir")? true : false,
             soloImprimir = (e.target.id == "soloImprimir")? true : false,
             listaCantidadCero = [],
             anticipo = (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
+            codigoTalon = parseInt(_this.$('#codigoTalon').val()),
             totalFactura = this.obtenerTotalFactura();
+
+            codigoTalon = (_.isNaN(codigoTalon))? 0 : codigoTalon;
 
             if(soloImprimir) {
                 window.open("tareas.php?action=soloPrintTicketHandler&codigoPedido="+ _this.model.id
@@ -588,7 +592,7 @@ PedidosModificarView = Backbone.View.extend({
 
         if(_this.model.isNew()) {
             _this.model.set({
-                "codigoTalon" : _this.$('#codigoTalon').val(),
+                "codigoTalon" : codigoTalon,
                 "codigoCliente" : _this.$('#codigoCliente').val(),
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "anticipo" : anticipo,
@@ -599,7 +603,7 @@ PedidosModificarView = Backbone.View.extend({
             }, {silent: true});
         } else {
             _this.model.set({
-                "codigoTalon" : _this.$('#codigoTalon').val(),
+                "codigoTalon" : codigoTalon,
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "imprimir" : imprimir,
                 "soloImprimir" : soloImprimir,
@@ -608,8 +612,6 @@ PedidosModificarView = Backbone.View.extend({
                 "anticipo" : anticipo
             }, {silent: true});
         }
-
-
 
         wcat.waitDialog();
         _this.model.save({}, {
@@ -733,14 +735,19 @@ EntregarPedidoView = Backbone.View.extend({
         
         var _this = this;
         if(this.$("input[name='tipoCliente']:checked").val() === "1" ) { // si es consumidor Final
+
+            if(this.model.get("tieneCuentaCorriente") == 1) {
+                if(!confirm("El cliente TIENE CUENTA CORRIENTE, esta seguro que quiere ingresar el pago como Consumidor Final?")) {
+                    _this.cancelar();
+                    return;
+                }
+            }
             
             var montoEntregado = this.$("#montoPagado").val();
 
             if( (this.model.get("aCobrar") != 0) && (_.isEmpty(montoEntregado) || this.model.get("vuelto") < 0 || !wcat.validate.number.test(montoEntregado)) ) {
-
                 wcat.jAlert("Debe ingresar un monto, igual o superior a lo que hay que cobrar!");
                 $(e.target).attr({ disabled : false });
-
             } else {
                 var data = {
                     codigoPedido : main.pedidos.lastRowSelected,
@@ -766,7 +773,7 @@ EntregarPedidoView = Backbone.View.extend({
                 }); // ajax
             } 
         } else { // a cuenta corriente
-            
+
             var data = {
                 codigoPedido : main.pedidos.lastRowSelected,
                 codigoEstado : 5

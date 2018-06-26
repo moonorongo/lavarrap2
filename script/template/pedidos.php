@@ -8,10 +8,11 @@
                             <th style="text-align: left; width: 9%">Fecha</th>
                             <th style="text-align: left; width: 24%">Nombre</th>
                             <th style="text-align: left; width: 24%">Direcci&oacute;n</th>
-                            <th style="text-align: left; width: 20%">Tel&eacute;fono</th>
+                            <th style="text-align: left; width: 10%">Tel&eacute;fono</th>
                             <th style="text-align: left; width: 9%">F. retiro</th>
                             <th style="text-align: left; width: 8%">Derivaci&oacute;n</th>
                             <th style="text-align: left; width: 6%">%</th>
+                            <th style="text-align: left; width: 10%">CC</th>
                         </tr>
                     </thead>
                     <tbody>

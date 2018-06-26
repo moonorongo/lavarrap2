@@ -39,14 +39,19 @@
         public function actualizarSaldo($model, $codigoCliente) {
             $success = true;
             
+            // esto elimina entradas  que tengan codigoPedido = NULL ()
+            // que representan saldo a favor del cliente.
             $success = $this->cuentaCorriente->eliminarSaldos($codigoCliente);
             
+            // esto actualiza los montos de cada codigoCC (codigo PK)
+            // se recibe por get, lo arma previamente la otra llamada
             $itemsAfectados = $model->itemsAfectados;
             foreach($itemsAfectados as $item) {
                 $success = $this->cuentaCorriente->updateMonto($item->codigoCuentaCorriente, $item->monto);
             }
             
             // si quedo un saldo positivo lo adiciona a la cta corriente
+            // se recibe de la otra llamada
             if($model->aFavorDelCliente != 0) { 
                 $ccData = Array("codigoCliente" => $codigoCliente, "codigoPedido" => null, "monto" => -$model->aFavorDelCliente);
                 $this->cuentaCorriente->create($ccData);
@@ -57,9 +62,6 @@
         
         
         public function corregirSaldo($cantidad, $codigoCliente) {
-            // implementar correccion de saldo
-            // buscar si tiene saldo a favor (- ), si tiene, obtener el codigo, y agregarle $cantidad
-            // si no tiene, crearlo con $cantidad
             $model = $this->cuentaCorriente->getSaldoCliente($codigoCliente);
             if($model["codigo"] != null) { // si tiene saldo, lo adiciono-resto
                 $model["monto"] += $cantidad;

@@ -37,7 +37,8 @@ CuentaCorriente = Backbone.View.extend({
                     $.ajax({
                         url: "cuentaCorriente.php?action=ingresarCorreccion",
                         data: {cantidad: cantidad, codigoCliente: codigoCliente},
-                        success: function(response){
+                        success: function(response) {
+                            _this.realizarPago(0, codigoCliente, false); // actualiza saldo CC, no muestra confirm
                             _this.refresh();
                         }
                     });
@@ -45,7 +46,68 @@ CuentaCorriente = Backbone.View.extend({
             }
         },
                 
-                
+        
+        realizarPago: function(cantidad, codigoCliente, mostrarAlertas) {
+            var mostrarAlertas = _.isUndefined(mostrarAlertas)? true : mostrarAlertas,
+                _this = this;
+
+            console.log(mostrarAlertas);
+
+            $.ajax({
+                url: "cuentaCorriente.php?action=ingresarPago",
+                data: { 
+                        cantidad: cantidad, 
+                        codigoCliente: codigoCliente
+                      },
+                success: function(response){
+                    var codigosSaldados = "";
+                    var medioSaldar = "";
+                    var condicionExcedente = "";
+                    
+                    if (response.success) {
+                        _.each(response.itemsAfectados, function(e) {
+                            if(e.monto == 0) {
+                                codigosSaldados += " " + e.codigoPedido + ",";
+                            } else {
+                                medioSaldar = e.codigoPedido +" ($"+ Math.abs(e.monto) +")";
+                            }
+                        });
+                        codigosSaldados = codigosSaldados.substr(0,codigosSaldados.length - 1);
+                        
+                        if(response.aFavorDelCliente != 0) condicionExcedente = "Saldo a favor del cliente: $ "+ response.aFavorDelCliente;
+                        if(!_.isEmpty(codigosSaldados)) codigosSaldados = "Los siguientes pedidos ser&aacute;n saldados:<br />" + codigosSaldados +"<br />";
+                        if(!_.isEmpty(medioSaldar)) medioSaldar = "El siguiente pedido queda a medio saldar: " + medioSaldar + "<br />";
+
+                        if(mostrarAlertas) {
+                            wcat.jConfirm(
+                                codigosSaldados +
+                                medioSaldar +
+                                condicionExcedente , 
+                                function() {
+                                    _this.confirmarIngresarPago(JSON.stringify(response), codigoCliente)
+                                }, 
+                                null, 
+                                { width: 400, height: 300, title: "Confirmar" });
+                        } else {
+                            _this.confirmarIngresarPago(JSON.stringify(response), codigoCliente)
+                        }
+                    } // response.success
+                }
+            });
+        },
+
+
+        confirmarIngresarPago: function(model, codigoCliente) {
+            var _this = this;
+            $.ajax({
+                url: 'cuentaCorriente.php?action=confirmarIngresarPago',
+                data: {model : model, codigoCliente : codigoCliente},
+                success: function(response){
+                    _this.refresh();
+                }
+            });
+        },
+
                 
         ingresarPagoCuentaCorriente: function() {
             var codigoCliente = $('#codigoClienteCuentaCorriente').val();
@@ -55,52 +117,15 @@ CuentaCorriente = Backbone.View.extend({
                 alert("Debe seleccionar un cliente!");
             } else {
                 var cantidad = prompt("Ingrese cantidad:");
-                var month = $('#monthCuentaCorriente').val();
-                var year = $('#yearCuentaCorriente').val();
+                    cantidad = parseInt(cantidad);
             
-                $.ajax({
-                    url: "cuentaCorriente.php?action=ingresarPago",
-                    data: { cantidad: cantidad, 
-                            codigoCliente: codigoCliente,
-                            month : month,
-                            year : year },
-                    success: function(response){
-                        var codigosSaldados = "";
-                        var medioSaldar = "";
-                        var condicionExcedente = "";
-                        
-                        if (response.success) {
-                            _.each(response.itemsAfectados, function(e) {
-                                if(e.monto == 0) {
-                                    codigosSaldados += " " + e.codigoPedido + ",";
-                                } else {
-                                    medioSaldar = e.codigoPedido +" ($"+ Math.abs(e.monto) +")";
-                                }
-                            });
-                            codigosSaldados = codigosSaldados.substr(0,codigosSaldados.length - 1);
-                            
-                            if(response.aFavorDelCliente != 0) condicionExcedente = "Saldo a favor del cliente: $ "+ response.aFavorDelCliente;
-                            if(!_.isEmpty(codigosSaldados)) codigosSaldados = "Los siguientes pedidos ser&aacute;n saldados:<br />" + codigosSaldados +"<br />";
-                            if(!_.isEmpty(medioSaldar)) medioSaldar = "El siguiente pedido queda a medio saldar: " + medioSaldar + "<br />";
+                if ( (!_.isNaN(cantidad)) && (cantidad > 0) ) {
+                    this.realizarPago(cantidad, codigoCliente);
+                } else {
+                    alert("Debe ingresar un numero valido mayor de 0");
+                }
 
-                            wcat.jConfirm(
-                                codigosSaldados +
-                                medioSaldar +
-                                condicionExcedente , 
-                                function() {
-                                    $.ajax({
-                                        url: 'cuentaCorriente.php?action=confirmarIngresarPago',
-                                        data: {model : JSON.stringify(response), codigoCliente : codigoCliente},
-                                        success: function(response){
-                                            _this.refresh();
-                                        }
-                                    });
-                                }, 
-                                null, 
-                                { width: 400, height: 300, title: "Confirmar" });                        
-                        } // response.success
-                    }
-                });
+
             }
         },
                 
