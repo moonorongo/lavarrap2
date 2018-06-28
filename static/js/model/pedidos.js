@@ -703,21 +703,38 @@ EntregarPedidoView = Backbone.View.extend({
         "click #aceptar": "entregarPedido",
         "click #cancelar": "cancelar",
         "keyup #montoPagado" : "checkNumbers",
-        "change input[name='tipoCliente']" : "disableServiciosEntregaPedido"
+        "change input[name='tipoCliente']" : "disableServiciosEntregaPedido",
+        "change #conDebito" : "fillAndDisableInput"
     },
           
+    fillAndDisableInput : function(e) {
+        if(this.$(e.target).prop('checked')) {
+            this.$('#montoPagado')
+                .val(this.model.get("aCobrar"))
+                .prop({ disabled : true});
+        } else {
+            this.$('#montoPagado')
+                .prop({ disabled : false})
+                .val("");
+        }
+
+        this.checkNumbers();
+    },
+
     disableServiciosEntregaPedido : function() {
         if(this.$("input[name='tipoCliente']:checked").val() === "1" ) {
             this.$(".detalleConsumidorFinal").show();
             this.$('#aceptar').html('<i class="icon-print"></i>Aceptar &amp; Imprimir');
+            this.$('#conDebitoContainer').show();
         } else {
             this.$(".detalleConsumidorFinal").hide();
             this.$('#aceptar').html('<i class="icon-ok"></i>Aceptar');
+            this.$('#conDebitoContainer').hide();
         }
     },
     
     checkNumbers : function(event) {
-        this.model.set("montoPagado", parseFloat(event.currentTarget.value));
+        this.model.set("montoPagado", parseFloat(this.$('#montoPagado').val()));
         this.model.set("vuelto", this.model.get("montoPagado") - this.model.get("aCobrar"));
         
         if(_.isNaN(this.model.get("vuelto"))) {
@@ -742,7 +759,7 @@ EntregarPedidoView = Backbone.View.extend({
                     return;
                 }
             }
-            
+
             var montoEntregado = this.$("#montoPagado").val();
 
             if( (this.model.get("aCobrar") != 0) && (_.isEmpty(montoEntregado) || this.model.get("vuelto") < 0 || !wcat.validate.number.test(montoEntregado)) ) {
@@ -753,7 +770,8 @@ EntregarPedidoView = Backbone.View.extend({
                     codigoPedido : main.pedidos.lastRowSelected,
                     codigoEstado : 4,
                     montoPagado : _this.model.get("montoPagado"),
-                    vuelto : _this.model.get("vuelto")
+                    vuelto : _this.model.get("vuelto"),
+                    conDebito : (_this.$('#conDebito').prop('checked'))? 1 : 0
                 };
 
                 $.ajax({

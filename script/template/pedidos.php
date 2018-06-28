@@ -177,10 +177,14 @@
 
 
 <script type="text/template" id="entregarPedidoTemplate">
-    <div>
-        <input type="radio" name="tipoCliente" checked value="1" /> Consumidor final &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="radio" name="tipoCliente" value="2" /> Cuenta Corriente
+    <div style="width: 162px; float: left">
+        <div><input type="radio" name="tipoCliente" checked value="1" /> Consumidor final</div>
+        <div><input type="radio" name="tipoCliente" value="2" /> Cuenta Corriente</div>
     </div>                    
+    <div style="width: 160px; float: left" id="conDebitoContainer">
+        <input type="checkbox" id="conDebito" /> Con d&eacute;bito
+    </div>                    
+
     <table class="serviciosEntregaPedido" id="serviciosEntregaPedido" >
         <tr>
             <th style="width: 230px">Servicio</th>

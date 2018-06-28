@@ -71,22 +71,46 @@
 
         }
         
-        
-        
+       
         public function listEgresosMes($fecha, $search = "") {
             if(empty($search)) {
-                $sql = "SELECT * FROM caja WHERE month(fecha) = month('$fecha') 
-                    AND year(fecha) = year('$fecha') 
-                    AND codigoSucursal = $this->codigoSucursal ORDER BY fecha";
+                $sql = "
+                    SELECT 
+                        caja.*,
+                        pedidos.codigoTalon, 
+                        pedidos.codigo AS codigoPedido,
+                        clientes.nombres, 
+                        clientes.apellido
+                    FROM caja 
+                    LEFT JOIN pedidosCaja ON pedidosCaja.codigoCaja = caja.codigo
+                    LEFT JOIN pedidos ON pedidosCaja.codigoPedido = pedidos.codigo
+                    LEFT JOIN clientes ON pedidos.codigoCliente = clientes.codigo
+
+                    WHERE month(fecha) = month('$fecha') 
+                        AND year(fecha) = year('$fecha') 
+                        AND caja.codigoSucursal = $this->codigoSucursal 
+                    ORDER BY fecha";
+
             } else {
-                $sql = "SELECT * FROM caja 
-                        WHERE UPPER(observaciones) LIKE UPPER('%$search%')
-                        AND codigoSucursal = $this->codigoSucursal ORDER BY fecha DESC LIMIT 2000";
+                $sql = "
+                    SELECT 
+                        caja.*,
+                        clientes.nombres, 
+                        clientes.apellido
+                    FROM caja 
+                    LEFT JOIN pedidosCaja ON pedidosCaja.codigoCaja = caja.codigo
+                    LEFT JOIN pedidos ON pedidosCaja.codigoPedido = pedidos.codigo
+                    LEFT JOIN clientes ON pedidos.codigoCliente = clientes.codigo
+
+                    WHERE UPPER(observaciones) LIKE UPPER('%$search%')
+                    AND caja.codigoSucursal = $this->codigoSucursal ORDER BY fecha DESC LIMIT 2000";
             }
                 
             $out = Array();
             $result = $this->mysql->query($sql);
             while ($row = $result->fetch_assoc()) {
+                $row['observaciones'] = $row['observaciones'] . ' - Cliente: '. $row['nombres'] .' '. $row['apellido'];
+
                 $out[] = $row;
             }
             return $out;
@@ -134,9 +158,9 @@
         }
         
 
-        public function registrarCajaPedido($monto, $codigoPedido, $observaciones = "") {
-            $stmt = $this->mysql->getStmt("INSERT INTO caja(monto,codigoSucursal, observaciones) VALUES (?, ?, ?)");
-            $stmt->bind_param("dis", $monto, $this->codigoSucursal, $observaciones);
+        public function registrarCajaPedido($monto, $codigoPedido, $observaciones = "", $conDebito = 0) {
+            $stmt = $this->mysql->getStmt("INSERT INTO caja(monto,codigoSucursal, observaciones, conDebito) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("disi", $monto, $this->codigoSucursal, $observaciones, $conDebito);
             $stmt->execute();
             $codigoCaja = $this->mysql->getLastId();
 

@@ -200,7 +200,8 @@
                                 $caja->registrarCajaPedido(
                                     $montoPagado, 
                                     $pedidoModel['codigo'], 
-                                    "Monto pagado operacion ". $ticketCodigo);
+                                    "Monto pagado operacion ". $ticketCodigo,
+                                    $_REQUEST['conDebito']);
                             }
                             
                             if($vuelto != 0) {
@@ -212,8 +213,6 @@
 
                             break;
                 case "5" :  // a cuenta Corriente
-                            // cambio estado tarea a Entregado
-                            
                             $pedidos = new Pedidos($mysql);
                             $pedidoModel = $pedidos->get($_REQUEST["codigoPedido"]);
 

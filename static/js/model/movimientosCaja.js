@@ -71,13 +71,25 @@ MovimientosCaja = Backbone.View.extend({
 
     showSaldoDeCaja: function(collection) {
         var sum = 0,
+            sumDebito = 0,
+            sumEfectivo = 0,
             search = this.$('#buscarMovientoCaja').val();
 
         if(search.trim().length == 0) {
-            collection.each(function(e){ sum += parseFloat(e.get("monto")) });
+            collection.each(function(e) { 
+                sum += parseFloat(e.get("monto"));
+
+                if(e.get('conDebito') === "1") {
+                    sumDebito += parseFloat(e.get("monto"));
+                }
+            });
         }
+
+        sumEfectivo = sum - sumDebito;
         
         this.$('#saldoDeCaja').html(sum.toFixed(2));
+        this.$('#totalDebito').html(sumDebito.toFixed(2));
+        this.$('#totalEfectivo').html(sumEfectivo.toFixed(2));
     },
 
     render: function() {
@@ -85,9 +97,6 @@ MovimientosCaja = Backbone.View.extend({
         return this;        
     }
 });
-
-
-
 
 
 CajaModel = Backbone.Model.extend({

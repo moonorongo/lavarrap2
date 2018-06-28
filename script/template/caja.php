@@ -20,11 +20,13 @@
         
 
         <label for="buscarMovientoCaja" style="margin-left: 40px;">Busqueda: 
-            <input id="buscarMovientoCaja" />
-            <button id="actualizarLista" style="margin-left: 10px">Actualizar lista</button>
+            <input id="buscarMovientoCaja" style="width: 160px;" />
+            <button id="actualizarLista" style="margin-left: 10px">Actualizar</button>
         </label>
 
-        <span class="saldoDeCajaContainer"> Saldo de caja: $ <span id="saldoDeCaja"></span></span>
+        <span class="saldoDeCajaContainer"> Total: $ <span id="saldoDeCaja"></span></span>
+        <span class="saldoDeCajaContainer"> Debito: $ <span id="totalDebito"></span></span>
+        <span class="saldoDeCajaContainer"> Efectivo: $ <span id="totalEfectivo"></span></span>
     </div>
     
     <div style="width: 980px;  margin-top: 5px;">
@@ -35,7 +37,8 @@
                         <th style="text-align: left; width: 10%">Fecha</th>
                         <th style="text-align: right; width: 10%">Ingreso</th>
                         <th style="text-align: right; width: 10%">Egreso</th>
-                        <th style="text-align: left; width: 56%">Observaciones</th>
+                        <th style="text-align: left; width: 46%">Observaciones</th>
+                        <th style="text-align: center; width: 6%">D&eacute;bito</th>
                         <th style="text-align: center; width: 14%">Acciones</th>
 
                     </tr>
@@ -67,6 +70,7 @@
         <td style="text-align: right">&nbsp;</td>
     <@ } @>
     <td style="text-align: left"><@= observaciones @></td>
+    <td style="text-align: center"><@= (conDebito == 1) ? '<i class="icon-check"></i>' : '' @></td>
     <td style="text-align: center;"><button data-id-caja="<@= codigo @>" class="btnEditCaja">Editar</button> | <button data-id-caja="<@= codigo @>" class="btnBorrarCaja">Borrar</button></td>
 </script>
 
