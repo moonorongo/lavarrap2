@@ -117,7 +117,7 @@ CuentaCorriente = Backbone.View.extend({
                 alert("Debe seleccionar un cliente!");
             } else {
                 var cantidad = prompt("Ingrese cantidad:");
-                    cantidad = parseInt(cantidad);
+                    cantidad = parseFloat(cantidad);
             
                 if ( (!_.isNaN(cantidad)) && (cantidad > 0) ) {
                     this.realizarPago(cantidad, codigoCliente);

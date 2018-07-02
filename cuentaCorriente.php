@@ -34,7 +34,7 @@
 
         if($action=="ingresarPago") {
             $codigoCliente = $_REQUEST["codigoCliente"];
-            $cantidad = intval($_REQUEST["cantidad"]);
+            $cantidad = floatval($_REQUEST["cantidad"]);
             $cantidadTotal = $cantidad;
             $listaPedidos = $cuentaCorriente->listAll($codigoCliente); // al no poner fecha, lista solo los impagos
             $out = Array();
@@ -91,7 +91,7 @@
         if($action=="ingresarCorreccion") {
             $caja = new Caja($mysql);
             $codigoCliente = $_REQUEST["codigoCliente"];
-            $cantidad = intval($_REQUEST["cantidad"]);
+            $cantidad = floatval($_REQUEST["cantidad"]);
             $cuentaCorrienteService->corregirSaldo( $cantidad, $codigoCliente);
 
             if($cantidad < 0) {

@@ -227,9 +227,9 @@
                             $tareasSeleccionadas = Array();
                             forEach($listaTareas as $tarea) {
                                 $tareasSeleccionadas[] = $tarea["codigo"];
-                                $sumatoriaCobrar += intval($tarea["_subTotal"]);
+                                $sumatoriaCobrar += floatval($tarea["_subTotal"]);
                             }
-                            
+
                             $serviciosPedidos->cambiarEstado($tareasSeleccionadas, $codigoEstado);            
                             
                             // marco finalizado 

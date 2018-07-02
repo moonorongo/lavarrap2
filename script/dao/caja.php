@@ -102,9 +102,15 @@
                     LEFT JOIN pedidos ON pedidosCaja.codigoPedido = pedidos.codigo
                     LEFT JOIN clientes ON pedidos.codigoCliente = clientes.codigo
 
-                    WHERE UPPER(observaciones) LIKE UPPER('%$search%')
-                    AND caja.codigoSucursal = $this->codigoSucursal ORDER BY fecha DESC LIMIT 2000";
+                    WHERE 
+                    	( (UPPER(caja.observaciones) LIKE UPPER('%$search%')) OR 
+                    	  (UPPER(clientes.nombres) LIKE UPPER('%$search%')) OR 
+                    	  (UPPER(clientes.apellido) LIKE UPPER('%$search%')) ) AND
+                    	caja.codigoSucursal = $this->codigoSucursal 
+                	ORDER BY fecha DESC 
+                	LIMIT 2000";
             }
+
                 
             $out = Array();
             $result = $this->mysql->query($sql);
