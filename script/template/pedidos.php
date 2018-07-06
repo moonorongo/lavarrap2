@@ -51,11 +51,11 @@
 
             <label for="codigoCliente" style="margin-left: 20px">Cliente 
                 <select id="codigoCliente" style="display:none" class="obligatorio" title="Cliente" <@= (!isNew)? " disabled " : "" @> ></select>
-                <input id="searchCliente" style="width: 175px;" class="focusThis" value="<@= _nombreCliente @>" <@= (!isNew)? " disabled " : "" @> />
+                <input id="searchCliente" style="width: 130px;" class="focusThis" value="<@= _nombreCliente @>" <@= (!isNew)? " disabled " : "" @> />
             </label>
             <button class="button smallButton" id="addCliente" title="Agregar Cliente" <@= (!isNew)? " disabled " : "" @> ><i class="icon-plus"></i></button>
             
-            <label for="anticipo" style="margin-left: 20px">Anticipo 
+            <label for="anticipo" style="margin-left: 20px">Ant. 
                 <input type="text" id="anticipo" value="<@= anticipo @>" 
                             class="onlyNumbers" 
                             min="-1" 
@@ -63,6 +63,8 @@
                             tabindex="12" 
                             style="width: 35px" />
             </label>
+            <input type="checkbox" id="conDebito" style="margin-left: 10px" />
+            <label for="conDebito">Deb.</label>
         </div>
         
         

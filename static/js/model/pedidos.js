@@ -558,6 +558,7 @@ PedidosModificarView = Backbone.View.extend({
             soloImprimir = (e.target.id == "soloImprimir")? true : false,
             listaCantidadCero = [],
             anticipo = (_.isEmpty(_this.$('#anticipo').val()))? 0 : _this.$('#anticipo').val(),
+            conDebito = this.$('#conDebito').prop('checked'),
             codigoTalon = parseInt(_this.$('#codigoTalon').val()),
             totalFactura = this.obtenerTotalFactura();
 
@@ -596,6 +597,7 @@ PedidosModificarView = Backbone.View.extend({
                 "codigoCliente" : _this.$('#codigoCliente').val(),
                 "fechaRetiro" : wcat.swapDateFormat($('#fechaRetiro', this.$el).val()),
                 "anticipo" : anticipo,
+                "conDebito" : conDebito,
                 "imprimir" : imprimir,
                 "soloImprimir" : soloImprimir,
                 "_nombreCliente" : _this.$('#codigoCliente option:selected').html(),

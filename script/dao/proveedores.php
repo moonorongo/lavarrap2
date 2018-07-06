@@ -32,8 +32,9 @@
         
         public function listAll($excludeMe = false) {
             $condicionExclusion = ($excludeMe)? " AND codigo <> ". $this->codigoSucursal : "";
+            $soloUserJabones = ($this->codigoSucursal != 9)? " AND codigo <> 9 " : "";
             $out = Array();
-            $result = $this->mysql->query("SELECT * FROM proveedores WHERE activo = 1". $condicionExclusion);
+            $result = $this->mysql->query("SELECT * FROM proveedores WHERE activo = 1". $condicionExclusion . $soloUserJabones);
             while ($row = $result->fetch_assoc()) {
                 $out[] = $row;
             }
@@ -109,7 +110,6 @@
         
         public function getPagedSorted($sSearch, $fieldOrder, $dirOrder, $start, $length, $soloActivos) {
         
-
             $sSearch = strtoupper($sSearch);
             
             // Armo query busqueda en base a configuracion columns
@@ -122,10 +122,14 @@
             
             $aBuscar = (strlen($sSearch) == 0)? " (1 = 1) " : $searchCondition;
             $aBuscar .= ($soloActivos)? " AND activo = 1 ":"";
-        
+
+            $soloUserJabones = ($this->codigoSucursal != 9)? " AND codigo <> 9 " : "";
+
             $out = Array();
 
-            $sql =  "SELECT * FROM ". $this->table ." WHERE ". $aBuscar 
+            $sql =  "SELECT * FROM ". $this->table 
+                    ." WHERE ". $aBuscar 
+                    . $soloUserJabones
                     ." ORDER BY ". $this->columns[$fieldOrder] ." ". $dirOrder ." LIMIT ". $start .','. $length;
                     
             $result = $this->mysql->query($sql);
@@ -142,8 +146,9 @@
         
         
         public function count() {
+            $soloUserJabones = ($this->codigoSucursal != 9)? " WHERE codigo <> 9 " : "";
 
-            $result = $this->mysql->query("SELECT count(codigo) as total from ". $this->table);
+            $result = $this->mysql->query("SELECT count(codigo) as total from ". $this->table . $soloUserJabones);
             
             while ($row = $result->fetch_assoc()) {
                 $out = $row["total"];

@@ -80,18 +80,20 @@
             if ( ($_method == null) && ($model != null) && ($codigo == null) ) {
 
                 $modelData = json_decode($model, true);
+                $conDebito = $modelData['conDebito'];
                 $modelData = $pedidosService->create($modelData);
 
                 // registro anticipo, solo si no es plantilla
                 if($modelData["nombre"] == "") {
                     $anticipo = floatval($modelData['anticipo']);
                     if($anticipo != 0) {
-                        
+
                         $caja->registrarCajaPedido(
                             $anticipo, 
                             $modelData['codigo'], 
                             "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
-                            " - Codigo Talon: ". $modelData['codigoTalon']);
+                            " - Codigo Talon: ". $modelData['codigoTalon'],
+                            $conDebito);
                     }
                 }
                 

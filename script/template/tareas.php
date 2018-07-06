@@ -42,7 +42,7 @@
                 global $_SUCURSAL;
                 $mysql = Mysql::getInstance();
                 $mysql->connect();
-                $result = $mysql->query("SELECT codigo, descripcion FROM proveedores WHERE activo = 1 and codigo <> $_SUCURSAL");
+                $result = $mysql->query("SELECT codigo, descripcion FROM proveedores WHERE activo = 1 and (codigo <> $_SUCURSAL) and (codigo <> 9)");
                 while ($row = $result->fetch_assoc()) {
             ?>
             <option value="<?php echo $row['codigo']; ?>"><?php echo $row['descripcion']; ?></option>

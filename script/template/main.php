@@ -15,7 +15,7 @@
                     <?php
                         $mysql = Mysql::getInstance();
                         $mysql->connect();
-                        $result = $mysql->query("SELECT codigo, descripcion FROM proveedores WHERE activo = 1 and esSucursal = 1");
+                        $result = $mysql->query("SELECT codigo, descripcion FROM proveedores WHERE activo = 1 and esSucursal = 1 and codigo <> 9");
                         while ($row = $result->fetch_assoc()) {
                             $selected = ($row['codigo'] == $_SUCURSAL)? " selected ":"";
                     ?>
