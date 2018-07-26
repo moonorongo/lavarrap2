@@ -106,7 +106,7 @@
                 // registro anticipo, solo si no es plantilla
                 if($modelData["nombre"] == "") {
                     $anticipo = floatval($modelData['anticipo']);
-                    if($anticipo != 0) {
+                    //if($anticipo != 0) {
 
                         $caja->registrarCajaPedido(
                             $anticipo, 
@@ -114,7 +114,7 @@
                             "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
                             " - Codigo Talon: ". $modelData['codigoTalon'],
                             $conDebito);
-                    }
+                    //}
                 }
                 
                 
@@ -172,13 +172,13 @@
                         $anticipo = floatval($modelData['anticipo']);
                         $diferenciaRegistrar = $anticipo - $oldModelData["anticipo"];
 
-                        if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
+                        // if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
                             $caja->registrarCajaPedido(
                                 $diferenciaRegistrar, 
                                 $modelData['codigo'], 
                                 "Correccion anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
                                 " - Codigo Talon: ". $modelData['codigoTalon']);
-                        }
+                        // }
                     }
                 } else {
                     $oldModelData['imprimir'] = $modelData['imprimir'];

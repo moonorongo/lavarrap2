@@ -41,7 +41,7 @@
             
             if($cantidad >= 0) {
                 foreach($listaPedidos as $item) {
-                    if($item["monto"] != 0) {
+                    // if($item["monto"] != 0) {
                         if($item["codigo"] == 0) {
                             $cantidad -= $item["monto"];  // como aca monto es negativo (porq es saldo a favor), en realidad se agrega a cantidad
                         } else {
@@ -58,7 +58,7 @@
                                 break;
                             } 
                         }
-                    }
+                    // }
                 } // foreach
             } else {
                 echo '{ "success" : false }';
