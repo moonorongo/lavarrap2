@@ -13,6 +13,7 @@
     <script src="static/js/model/movimientosCaja.js"></script>
     <script src="static/js/model/reportes.js"></script>
     <script src="static/js/model/logCaja.js"></script>
+    <script src="static/js/model/logPedidos.js"></script>
 <?php } ?>
 
 </body>

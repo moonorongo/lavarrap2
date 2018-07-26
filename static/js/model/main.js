@@ -23,7 +23,6 @@ Main = Backbone.View.extend({
         "click #egresoCaja" : "caja",
         "click #cerrarCajaMes" : "cerrarCajaMes",
         "click #movimientosCaja" : "movimientosCaja",
-        "click #logCaja" : "logCaja",
         
         "click #rPrincipal" : "rPrincipal",
         "click #cajaFacturado" : "cajaFacturado",
@@ -41,7 +40,10 @@ Main = Backbone.View.extend({
         "click .menu-item" : "highlightParent",
         
         "click #cambiarSucursal" : "mostrarCambiarSucursal",
-        "change #sucursalCombo" : "cambiarSucursal"
+        "change #sucursalCombo" : "cambiarSucursal",
+
+        "click #logCaja" : "logCaja",
+        "click #logPedidos" : "logPedidos"
     },
             
 
@@ -50,6 +52,13 @@ Main = Backbone.View.extend({
         this.logCaja = new LogCaja();
         return false;
     },
+
+    logPedidos: function(e) {
+        this.closeAll();
+        this.logPedidos = new LogPedidos();
+        return false;
+    },
+
 
     highlightParent: function(e) {
         var 
@@ -255,6 +264,7 @@ Main = Backbone.View.extend({
         if(!_.isUndefined(this.reportes.close)) this.reportes.close();
         if(!_.isUndefined(this.cuentaCorriente.close)) this.cuentaCorriente.close();
         if(!_.isUndefined(this.logCaja.close)) this.logCaja.close();
+        if(!_.isUndefined(this.logPedidos.close)) this.logPedidos.close();
     },
             
     render: function() {

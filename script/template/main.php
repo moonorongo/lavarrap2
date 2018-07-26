@@ -27,6 +27,15 @@
             <div id="menu" class="menu">
                 <ul>
                 <?php if(isAdmin()) { ?>                    
+                    <li class="root-menu"><a id="reportes">Logs <i class="icon-angle-down"></i></a>
+                        <ul>
+                            <li><a id="logCaja" class="menu-item">Caja</a></li>
+                            <li><a id="logPedidos" class="menu-item">Pedidos</a></li>
+                        </ul>
+                    </li>
+                <?php } ?>    
+
+                <?php if(isAdmin()) { ?>                    
                     <li class="root-menu"><a id="reportes">Reportes <i class="icon-angle-down"></i></a>
                         <ul>
                             <li><a id="rPrincipal" class="menu-item">Principal</a></li>
@@ -45,7 +54,6 @@
                             <li><a id="insumos" class="menu-item">Insumos</a></li>
                             <li><a>Caja <i class="icon-angle-right"></i></a>
                                 <ul>
-                                    <li><a id="logCaja" class="menu-item">Ver log de Caja</a></li>
                                     <li><a id="ingresoCaja" class="menu-item">Registrar ingreso</a></li>
                                     <li><a id="egresoCaja" class="menu-item">Registrar egreso</a></li>
                                     <li><a id="cerrarCajaMes" class="menu-item">Cerrar Caja Mes</a></li> 

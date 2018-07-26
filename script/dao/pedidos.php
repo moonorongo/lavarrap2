@@ -348,7 +348,80 @@
         }
 
         
-        
+  
+
+// LOG PEDIDOS methods
+        public function countLogs($fecha, $sSearch) {
+            $sSearch = strtoupper($sSearch);
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."( UPPER(". $value .") LIKE UPPER('%". $sSearch ."%') ) ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = empty($sSearch)? " (1 = 1) " : $searchCondition;
+            $whereFecha = empty($fecha)? " (1 = 1) " : " (DATE(timestamp) = '$fecha') ";
+
+            $sql = 
+                "SELECT 
+                   count(id) AS total
+                FROM  log4php_pedidos
+                WHERE 
+                    $whereFecha
+                    AND $aBuscar";
+            
+            $result = $this->mysql->query($sql);
+            
+            if ($row = $result->fetch_assoc()) {
+                $out = $row["total"];
+            }
+            return $out;
+        }
+
+
+        public function getPagedSortedLogs($sSearch, $start, $length, $fecha) {
+            $sSearch = strtoupper($sSearch);
+            // Armo query busqueda en base a configuracion columns
+            $searchCondition = " ( ";
+            foreach ($this->columns as $key => $value) {
+                $or = ($key == 0)? " ":" OR ";
+                $searchCondition .= $or ."( UPPER(". $value .") LIKE UPPER('%". $sSearch ."%') ) ";
+            }
+            $searchCondition .= " ) ";
+            
+            $aBuscar = empty($sSearch)? " (1 = 1) " : $searchCondition;
+            $whereFecha = empty($fecha)? " (1 = 1) " : " (DATE(timestamp) = '$fecha') ";
+       
+            $out = Array();
+            $sql =  "SELECT 
+                        timestamp, message
+                    FROM  log4php_pedidos
+                    WHERE (1 = 1)
+                      AND $whereFecha
+                      AND $aBuscar 
+                      AND sucursal = $this->codigoSucursal
+                    ORDER BY timestamp DESC
+                    LIMIT $start, $length";
+
+            $stmt = $this->mysql->getStmt($sql);
+            $stmt -> execute();
+            $stmt -> bind_result($timestamp, $message);
+            
+            while($stmt -> fetch()) {
+                $tmpRow = array(
+                           "fecha" => date_create($timestamp)->format('d/m/Y'),
+                           "message" => $message
+                          );
+                $out[] = $tmpRow;
+            }
+            
+            $stmt -> close();
+            return $out;
+        }
+
+
+
         
     }
 ?>

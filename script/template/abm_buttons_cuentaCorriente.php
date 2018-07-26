@@ -40,6 +40,7 @@
              } ?>
         </select>
         
+        <strong style="margin-left: 15px;">Fact.:</strong> $ <span id="facturadoCC"></span>
         <strong style="margin-left: 15px;">Saldo:</strong> $ <span id="saldoCC"></span>
         
     </div>

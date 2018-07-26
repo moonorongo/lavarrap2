@@ -188,6 +188,29 @@ CuentaCorriente = Backbone.View.extend({
             DTConfig.aoColumnDefs = aoColumnDefs;
             DTConfig.aaSorting = [[0,'asc']];
 
+
+			DTConfig.fnServerData = function ( sSource, aoData, fnCallback, oSettings ) {
+
+		      oSettings.jqXHR = $.ajax( {
+		        "dataType": 'json',
+		        "type": "POST",
+		        "url": sSource,
+		        "data": aoData,
+		        "success": function(aaData, response, jqXHR) {
+		        	var totalFacturado = 0;
+
+		        	_.each(aaData.aaData, function(e) {
+		        		totalFacturado += ( _.isNumber(e[2]) && !_.isNaN(e[2]))? e[2] : 0;
+		        	});
+
+		        	_this.$('#facturadoCC').html(totalFacturado.toFixed(2));
+
+		        	fnCallback(aaData, response, jqXHR);
+		        }
+		      });
+		    }
+
+
             DTConfig.fnCreatedRow = function(nRow, aData, iDataIndex ) {
                   // fix date columns
                   $('td:eq(1)', nRow).html(wcat.swapDateFormat(aData[1]));

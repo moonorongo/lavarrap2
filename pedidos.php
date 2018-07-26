@@ -4,6 +4,9 @@
 */    
     session_start();
     require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/config.php");
+    require_once($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php/Logger.php");
+    Logger::configure($_SERVER["DOCUMENT_ROOT"] ."/script/inc/log4php.xml");
+    $log = Logger::getLogger('databaseLoggerPedidos');
     
     if(!isset($_SESSION['LOGGED'])) { // si no esta logueado
         header('HTTP/1.0 401 Unauthorized');
@@ -71,7 +74,24 @@
 
             // destroy (DELETE) * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
             if ( (($_method != null) && ($_method=="DELETE")) && ($model == null) && ($codigo != null) ) {
+
                 $pedidosService->delete($codigo);
+                
+                $model = $pedidosService->get($codigo);
+
+                $log_data = array(
+                    'accion' => 'Eliminacion',
+                    'codigoTalon' => $model['codigoTalon'],
+                    'anticipo' => $model['anticipo'],
+                    'codigo' => $model['codigo'],
+                    'servicios' => $model['listaServicios'],
+                    'anticipoAnterior' => 0,
+                    'serviciosAnterior' => [],
+                    'usuario' => $_SESSION['USER'],
+                    'ip' => $_SESSION['USER_IP']
+                );
+                $log->info(serialize($log_data));
+
                 echo('{"success" : true}');
             }
 
@@ -131,6 +151,20 @@
                 $modelData = json_decode($model, true);
                 $oldModelData = $pedidosService->get($modelData["codigo"]);
 
+
+                 $log_data = array(
+                    'accion' => 'Modificacion',
+                    'codigoTalon' => $modelData['codigoTalon'],
+                    'anticipo' => $modelData['anticipo'],
+                    'codigo' => $codigo,
+                    'servicios' => array_filter($modelData['listaServicios'], function($row) { return (!$row['deleted']); }),
+                    'anticipoAnterior' => $oldModelData['anticipo'],
+                    'serviciosAnterior' => $oldModelData['listaServicios'],
+                    'usuario' => $_SESSION['USER'],
+                    'ip' => $_SESSION['USER_IP']
+                );
+                $log->info(serialize($log_data));
+
                 if(!$modelData['soloImprimir']) {
                     $pedidosService->update($modelData);
 
@@ -177,7 +211,7 @@
                         $ticket->generateWithServices();
                     }
                 }
-                
+
                 echo('{"success" : true}');
             }    
         } // pedidosModelCRUD

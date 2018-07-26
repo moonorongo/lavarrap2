@@ -26,6 +26,7 @@
         require_once($_SERVER["DOCUMENT_ROOT"] ."/script/template/cuentaCorriente.php");
         require_once($_SERVER["DOCUMENT_ROOT"] ."/script/template/tareas.php");
         require_once($_SERVER["DOCUMENT_ROOT"] ."/script/template/caja.php");
+        require_once($_SERVER["DOCUMENT_ROOT"] ."/script/template/logs.php");
         
         
         
