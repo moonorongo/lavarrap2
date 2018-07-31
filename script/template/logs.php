@@ -39,8 +39,8 @@
                         <th style="text-align: left; width: 10%">Anticipo</th>
                         <th style="text-align: left; width: 12%">Prev. Antic.</th>
 
-                        <th style="text-align: left; width: 12%">Cant Serv.</th>
-                        <th style="text-align: left; width: 12%">Prev. Cant. S.</th>
+                        <th style="text-align: left; width: 12%">$ Serv.</th>
+                        <th style="text-align: left; width: 12%">Prev. $ Serv.</th>
                         <th style="text-align: left; width: 10%">Usuario</th>
                         <th style="text-align: left; width: 9%">IP</th>
                     </tr>

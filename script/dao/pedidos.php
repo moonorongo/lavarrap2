@@ -3,6 +3,7 @@
         
         private $mysql = null;
         private $columns = Array("p.codigo", "p.codigoTalon", "c.nombres", "c.apellido");
+        private $columnsLog = Array("timestamp", "message");
         private $codigoSucursal = null;
 
         function __construct($mysql) {
@@ -354,7 +355,7 @@
         public function countLogs($fecha, $sSearch) {
             $sSearch = strtoupper($sSearch);
             $searchCondition = " ( ";
-            foreach ($this->columns as $key => $value) {
+            foreach ($this->columnsLog as $key => $value) {
                 $or = ($key == 0)? " ":" OR ";
                 $searchCondition .= $or ."( UPPER(". $value .") LIKE UPPER('%". $sSearch ."%') ) ";
             }
@@ -384,7 +385,7 @@
             $sSearch = strtoupper($sSearch);
             // Armo query busqueda en base a configuracion columns
             $searchCondition = " ( ";
-            foreach ($this->columns as $key => $value) {
+            foreach ($this->columnsLog as $key => $value) {
                 $or = ($key == 0)? " ":" OR ";
                 $searchCondition .= $or ."( UPPER(". $value .") LIKE UPPER('%". $sSearch ."%') ) ";
             }

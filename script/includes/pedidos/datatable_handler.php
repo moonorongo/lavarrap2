@@ -15,6 +15,20 @@
     $out["aaData"] = array_map(function($row) {
         $log_data = unserialize($row['message']);
 
+        $totalServicios = 0;
+        $totalServiciosAnterior = 0;
+
+        if(!empty($log_data['servicios'])) {
+            $totalServicios = array_reduce($log_data['servicios'], function($i, $row) {
+                return $i += $row['_subTotal'];
+            });
+        }
+
+        if(!empty($log_data['serviciosAnterior'])) {
+            $totalServiciosAnterior = array_reduce($log_data['serviciosAnterior'], function($i, $row) {
+                return $i += $row['_subTotal'];
+            });
+        }
         return array(
             "0" => $row['fecha'],
             "1" => $log_data['accion'],
@@ -22,8 +36,8 @@
             "3" => $log_data['codigo'],
             "4" => $log_data['anticipo'],
             "5" => $log_data['anticipoAnterior'],
-            "6" => count($log_data['servicios']),
-            "7" => count($log_data['serviciosAnterior']), 
+            "6" => $totalServicios,
+            "7" => $totalServiciosAnterior, 
             "8" => $log_data['usuario'],
             "9" => $log_data['ip']
         );
