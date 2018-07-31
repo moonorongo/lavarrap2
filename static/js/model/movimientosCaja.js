@@ -272,3 +272,84 @@ CajaView = Backbone.View.extend({
 
 
 
+
+
+DebitosCajaView = Backbone.View.extend({
+    
+    initialize: function() {
+        var _this = this;
+
+        this.$el = $('#cajaContainer');
+        this.el = this.$el[0];
+
+        this.render();
+        this.$('.focus').focus();
+    }, 
+
+    events: {
+        "click #aceptar": "aceptar",
+        "click #cancelar": "cancelar"
+    },
+  
+
+    aceptar: function(e){
+        e.preventDefault();
+        var _this = this;
+        $(e.currentTarget).prop({disabled : true});
+        
+        validate.test(this.$el);
+        
+        var hasError = validate.getErrorCount(this.$el)
+        
+        if(hasError !== 0) {
+            $(e.currentTarget).prop({disabled : false});
+            var erroresEncontrados = validate.showErrors(this.$el);
+            wcat.jConfirm(erroresEncontrados, function(){
+                _this.saveModel(e);
+            }, null, {width: 370, height: 300, title: 'Se encontraron errores'});
+        } else {
+            _this.saveModel(e);
+        }
+
+        return false;
+    },
+
+            
+    saveModel: function(e) {
+        var _this = this,
+            data = {
+                "monto": parseFloat(_this.$('#monto').val()),
+                "observaciones" : _this.$('#observaciones').val()
+            };
+
+        $.ajax({
+            url: "caja.php?action=debitoToCajaHandler",
+            data : {model : JSON.stringify(data)},
+            success: function(response) {
+                _this.cancelar();
+            }
+        })
+    },
+
+
+    cancelar: function(e) {
+        if(!_.isUndefined(e)) e.preventDefault(); 
+
+        this.undelegateEvents();
+        $(this.el).removeData().unbind();
+        this.unbind();
+
+        $('#cajaContainer').empty();
+        $('#cajaPopup').dialog("destroy");
+
+        return false;           
+    },    
+
+
+    render: function() {
+        var html = _.template($('#cajaTemplate').html(), this.attributes);
+        this.$el.html(html);
+        return this; 
+    }
+});
+

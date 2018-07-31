@@ -58,6 +58,8 @@
                                     <li><a id="egresoCaja" class="menu-item">Registrar egreso</a></li>
                                     <li><a id="cerrarCajaMes" class="menu-item">Cerrar Caja Mes</a></li> 
                                     <li><a id="movimientosCaja" class="menu-item">Movimientos de Caja</a></li>
+                                    <li><a id="movimientosCaja" class="menu-item">Movimientos de Caja</a></li>
+                                    <li><a id="debitoToCaja" class="menu-item">Debito a Caja</a></li>
                                 </ul>
                             </li>
                         </ul>

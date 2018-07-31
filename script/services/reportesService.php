@@ -58,17 +58,21 @@
             $listMovimientos = $this->caja->listMovimientosVentas($mes, $anio);
             $listMovsGrouped = array();
 
-            foreach ($listMovimientos as $item) {
-                preg_match('/(?:\d*\.)?\d+/', $item['observaciones'], $matched);
-                $pedidoId = $matched[0];
 
-                if(array_key_exists($pedidoId, $listMovsGrouped)) {
-                    $listMovsGrouped[$pedidoId]['monto'] += $item['monto'];
-                } else {
-                    $listMovsGrouped[$pedidoId] = array( 
-                                                    'monto' => $item['monto'],
-                                                    'fecha' => $item['fecha']
-                                                  );
+            foreach ($listMovimientos as $item) {
+                
+                if(strpos($item['observaciones'], 'operacion') !== false) {
+                    preg_match('/(?:\d*\.)?\d+/', $item['observaciones'], $matched);
+                    $pedidoId = $matched[0];
+
+                    if(array_key_exists($pedidoId, $listMovsGrouped)) {
+                        $listMovsGrouped[$pedidoId]['monto'] += $item['monto'];
+                    } else {
+                        $listMovsGrouped[$pedidoId] = array( 
+                                                        'monto' => $item['monto'],
+                                                        'fecha' => $item['fecha']
+                                                      );
+                    }
                 }
             }
 
@@ -85,14 +89,7 @@
                     'montoCobrado' => $value['monto']
                 );
             }
-
             return $out;
         }
-        
-
-        
-        
-        
-        
     }    
 ?>

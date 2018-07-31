@@ -86,7 +86,7 @@
                     'codigo' => $model['codigo'],
                     'servicios' => $model['listaServicios'],
                     'anticipoAnterior' => 0,
-                    'serviciosAnterior' => [],
+                    'serviciosAnterior' => array(),
                     'usuario' => $_SESSION['USER'],
                     'ip' => $_SESSION['USER_IP']
                 );

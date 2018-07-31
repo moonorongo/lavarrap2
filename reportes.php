@@ -22,6 +22,9 @@
         $fechaInicial = $_REQUEST["fechaInicial"];
         $fechaFinal = $_REQUEST["fechaFinal"];
 
+        // only for testing
+        // header("Content-type: text/html");
+
         header("Content-type: application/octet-stream");
         header("Content-Disposition: attachment; filename=". $action ."_". $fechaInicial ."_". $fechaFinal .".xls");
         header("Pragma: no-cache");

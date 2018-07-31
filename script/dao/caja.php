@@ -322,6 +322,23 @@
             $stmt -> close();
             return $out;
         }
-        
+  
+
+        public function debitoToCaja($monto, $observaciones) {
+            $montoDebito = -abs($monto);
+            $montoCaja = abs($monto);
+
+            $obsDebito = 'Extraccion del banco (DEBITO) ' . $observaciones;
+            $obsCaja = 'Ingreso a caja (DEBITO) ' . $observaciones;
+
+            $stmt = $this->mysql->getStmt("INSERT INTO caja(monto, observaciones, conDebito, codigoSucursal) VALUES (?, ?, 1, ". $this->codigoSucursal .")");
+            $stmt->bind_param("ds", $montoDebito, $obsDebito);
+            $stmt->execute();
+
+            $stmt = $this->mysql->getStmt("INSERT INTO caja(monto, observaciones, conDebito, codigoSucursal) VALUES (?, ?, 0, ". $this->codigoSucursal .")");
+            $stmt->bind_param("ds", $montoCaja, $obsCaja);
+            $stmt->execute();
+        } 
+
     }
 ?>

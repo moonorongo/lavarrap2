@@ -1,4 +1,5 @@
 <script type="text/template" id="tareasTemplate">
+        <div class="buttons-container"></div>
         <div style="width: 980px;">
             <div class="dataTableWrapper">
                 <table class="display dataTable" id="datatable" style="width: 100%">

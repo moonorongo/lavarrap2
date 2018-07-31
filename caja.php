@@ -29,6 +29,13 @@
             }
 
 
+            if($action == 'debitoToCajaHandler') {
+                $model = json_decode($_REQUEST["model"]); 
+                $caja->debitoToCaja(floatval($model->monto), $model->observaciones);
+                echo '{"success" : true}';
+            }
+
+
             if($action == 'cajaHandler') {
                 $model = json_decode($_REQUEST["model"]);
 

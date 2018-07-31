@@ -8,9 +8,11 @@ Tareas = Backbone.View.extend({
             this.el = this.$el[0];
                     
             this.render();
-            this.initDT();
-            $('.bottom',this.$el).prepend($('#TFDButtonsTemplate').html());
-            //$('.enableDisable').attr('disabled', true);
+            $('.buttons-container',this.$el).html($('#TFDButtonsTemplate').html());
+
+            this.initDT($('#filtroCodigoEstado').val());
+            // $('.bottom',this.$el).prepend($('#TFDButtonsTemplate').html());
+            
 
         }, // end initialize 
         

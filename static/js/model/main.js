@@ -23,6 +23,7 @@ Main = Backbone.View.extend({
         "click #egresoCaja" : "caja",
         "click #cerrarCajaMes" : "cerrarCajaMes",
         "click #movimientosCaja" : "movimientosCaja",
+        "click #debitoToCaja" : "debitoToCaja",
         
         "click #rPrincipal" : "rPrincipal",
         "click #cajaFacturado" : "cajaFacturado",
@@ -46,6 +47,21 @@ Main = Backbone.View.extend({
         "click #logPedidos" : "logPedidos"
     },
             
+
+    debitoToCaja: function(e) {
+        e.preventDefault();
+        
+        $('#cajaPopup').dialog({
+            height: 235,
+            width: 300,
+            title: 'Debitos a Caja',
+            resizable: false,
+            modal: true
+        });         
+        
+        var debitosCajaView = new DebitosCajaView();
+    },
+
 
     logCaja: function(e) {
         this.closeAll();
