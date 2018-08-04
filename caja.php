@@ -29,6 +29,11 @@
             }
 
 
+            if($action == 'getTotalDebitoHandler') {
+                echo '{"totalDebito" : '. $caja->getTotalDebito() .'}';
+            }
+
+
             if($action == 'debitoToCajaHandler') {
                 $model = json_decode($_REQUEST["model"]); 
                 $caja->debitoToCaja(floatval($model->monto), $model->observaciones);

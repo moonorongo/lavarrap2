@@ -340,5 +340,25 @@
             $stmt->execute();
         } 
 
+
+
+        public function getTotalDebito() {
+            
+            $month = date('n');
+            $year = date('Y');
+
+            $result =  $this->mysql->query("
+                SELECT sum(monto) as total
+                FROM caja 
+                WHERE year(fecha) = '$year' 
+                AND month(fecha) = '$month' 
+                and conDebito = 1
+                AND codigoSucursal = ". $this->codigoSucursal);
+
+            $out = $result->fetch_assoc();
+            return $out['total'];
+        }
+
+
     }
 ?>

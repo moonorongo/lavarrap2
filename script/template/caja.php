@@ -81,6 +81,7 @@
 
 <script type="text/template" id="cajaTemplate">
     <span style="margin-bottom:8px">Monto: </span><input type="text" id="monto" style="width:50px;" class="obligatorio onlyNumbers focusThis" tabindex=1 />
+    <span id="extra-info"></span>
     <br />
     Observaciones<br />
     <textarea id="observaciones" style="width:260px; height: 80px"></textarea>

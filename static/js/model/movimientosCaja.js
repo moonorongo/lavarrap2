@@ -284,6 +284,15 @@ DebitosCajaView = Backbone.View.extend({
 
         this.render();
         this.$('.focus').focus();
+        this.maxDebito = 0
+
+        $.ajax({
+            url : 'caja.php?action=getTotalDebitoHandler',
+            success : function(response) {
+                _this.$('#extra-info').html('(Max: $'+ response.totalDebito +')');
+                _this.maxDebito = response.totalDebito;
+            }
+        })
     }, 
 
     events: {
@@ -299,6 +308,14 @@ DebitosCajaView = Backbone.View.extend({
         
         validate.test(this.$el);
         
+        if(parseFloat(_this.$('#monto').val()) > _this.maxDebito) {
+            alert('No puede ingresar un monto mayor a ' + _this.maxDebito);
+            _this.$('#monto').val(_this.maxDebito);
+            
+            $(e.currentTarget).prop({disabled : false});
+            return;
+        }
+
         var hasError = validate.getErrorCount(this.$el)
         
         if(hasError !== 0) {
