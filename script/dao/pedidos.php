@@ -305,9 +305,6 @@
         
         
         
-        
-        
-        
         public function entregar($codigo) {
             $stmt = $this->mysql->getStmt("UPDATE pedidos 
                                             SET entregado = 1, fechaRetiro='". date("Y-m-d") ."' WHERE codigo = ?");
@@ -370,6 +367,7 @@
                 FROM  log4php_pedidos
                 WHERE 
                     $whereFecha
+                    AND sucursal = $this->codigoSucursal
                     AND $aBuscar";
             
             $result = $this->mysql->query($sql);

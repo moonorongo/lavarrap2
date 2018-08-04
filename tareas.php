@@ -196,20 +196,20 @@
                             // registro el movimiento en caja
                             $caja = new Caja($mysql);
 
-                            // if($montoPagado != 0) { 
+                            if($montoPagado != 0) { 
                                 $caja->registrarCajaPedido(
                                     $montoPagado, 
                                     $pedidoModel['codigo'], 
                                     "Monto pagado operacion ". $ticketCodigo,
                                     $_REQUEST['conDebito']);
-                            // }
+                            }
                             
-                            // if($vuelto != 0) {
+                            if($vuelto != 0) {
                                 $caja->registrarCajaPedido(
                                     -abs($vuelto), 
                                     $pedidoModel['codigo'], 
                                     "Vuelto entregado operacion ". $ticketCodigo);
-                            // }
+                            }
 
                             break;
                 case "5" :  // a cuenta Corriente

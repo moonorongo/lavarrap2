@@ -23,12 +23,12 @@
                 return $i += $row['_subTotal'];
             });
         }
-
         if(!empty($log_data['serviciosAnterior'])) {
             $totalServiciosAnterior = array_reduce($log_data['serviciosAnterior'], function($i, $row) {
                 return $i += $row['_subTotal'];
             });
         }
+
         return array(
             "0" => $row['fecha'],
             "1" => $log_data['accion'],

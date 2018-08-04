@@ -75,22 +75,29 @@
             // destroy (DELETE) * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
             if ( (($_method != null) && ($_method=="DELETE")) && ($model == null) && ($codigo != null) ) {
 
-                $pedidosService->delete($codigo);
-                
                 $model = $pedidosService->get($codigo);
+                $totalServicios = 0;
+                
+                if(!empty($model['listaServicios'])) {
+                    $totalServicios = array_reduce($model['listaServicios'], function($i, $row) {
+                        return $i += $row['_subTotal'];
+                    });
+                }
 
                 $log_data = array(
                     'accion' => 'Eliminacion',
                     'codigoTalon' => $model['codigoTalon'],
                     'anticipo' => $model['anticipo'],
                     'codigo' => $model['codigo'],
-                    'servicios' => $model['listaServicios'],
+                    'servicios' => array( array('_subTotal' => $totalServicios) ),
                     'anticipoAnterior' => 0,
                     'serviciosAnterior' => array(),
                     'usuario' => $_SESSION['USER'],
                     'ip' => $_SESSION['USER_IP']
                 );
                 $log->info(serialize($log_data));
+
+                $pedidosService->delete($codigo);
 
                 echo('{"success" : true}');
             }
@@ -106,7 +113,7 @@
                 // registro anticipo, solo si no es plantilla
                 if($modelData["nombre"] == "") {
                     $anticipo = floatval($modelData['anticipo']);
-                    //if($anticipo != 0) {
+                    if($anticipo != 0) {
 
                         $caja->registrarCajaPedido(
                             $anticipo, 
@@ -114,7 +121,7 @@
                             "Anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
                             " - Codigo Talon: ". $modelData['codigoTalon'],
                             $conDebito);
-                    //}
+                    }
                 }
                 
                 
@@ -150,19 +157,36 @@
             if ( ($_method != null) && (($_method=="PUT")) && ($model != null) && ($codigo != null) ) {
                 $modelData = json_decode($model, true);
                 $oldModelData = $pedidosService->get($modelData["codigo"]);
+                $totalServicios = 0;
+                $totalServiciosAnterior = 0;
 
+                if(!empty($modelData['listaServicios'])) {
+                    $listaServicios = array_filter($modelData['listaServicios'], function($row) { return (!$row['deleted']); });
+                    if(!empty($listaServicios)) {
+                        $totalServicios = array_reduce($listaServicios, function($i, $row) {
+                            return $i += $row['_subTotal'];
+                        });
+                    }
+                }
+                
+                if(!empty($oldModelData['listaServicios'])) {
+                    $totalServiciosAnterior = array_reduce($oldModelData['listaServicios'], function($i, $row) {
+                        return $i += $row['_subTotal'];
+                    });
+                }
 
                  $log_data = array(
                     'accion' => 'Modificacion',
                     'codigoTalon' => $modelData['codigoTalon'],
                     'anticipo' => $modelData['anticipo'],
                     'codigo' => $codigo,
-                    'servicios' => array_filter($modelData['listaServicios'], function($row) { return (!$row['deleted']); }),
+                    'servicios' => array( array('_subTotal' => $totalServicios) ),
                     'anticipoAnterior' => $oldModelData['anticipo'],
-                    'serviciosAnterior' => $oldModelData['listaServicios'],
+                    'serviciosAnterior' => array( array('_subTotal' => $totalServiciosAnterior) ),
                     'usuario' => $_SESSION['USER'],
                     'ip' => $_SESSION['USER_IP']
                 );
+
                 $log->info(serialize($log_data));
 
                 if(!$modelData['soloImprimir']) {
@@ -172,13 +196,13 @@
                         $anticipo = floatval($modelData['anticipo']);
                         $diferenciaRegistrar = $anticipo - $oldModelData["anticipo"];
 
-                        // if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
+                        if($diferenciaRegistrar != 0) { // si hay diferencia/anticipo, entonces lo registro
                             $caja->registrarCajaPedido(
                                 $diferenciaRegistrar, 
                                 $modelData['codigo'], 
                                 "Correccion anticipo operacion ". $proveedorModel["prefijoCodigo"] . $modelData['codigo'] .
                                 " - Codigo Talon: ". $modelData['codigoTalon']);
-                        // }
+                        }
                     }
                 } else {
                     $oldModelData['imprimir'] = $modelData['imprimir'];

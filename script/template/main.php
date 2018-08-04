@@ -39,7 +39,6 @@
                     <li class="root-menu"><a id="reportes">Reportes <i class="icon-angle-down"></i></a>
                         <ul>
                             <li><a id="rPrincipal" class="menu-item">Principal</a></li>
-                            <li><a id="cajaFacturado" class="menu-item">Caja contra Facturado</a></li>
                             <li><a id="rInsumos" class="menu-item">Insumos I/C</a></li>
                             <li><a id="rDerivaciones" class="menu-item">Derivaciones</a></li>
                             <li><a id="rServiciosRealizados" class="menu-item">Cant. Servicios</a></li>
@@ -57,7 +56,6 @@
                                     <li><a id="ingresoCaja" class="menu-item">Registrar ingreso</a></li>
                                     <li><a id="egresoCaja" class="menu-item">Registrar egreso</a></li>
                                     <li><a id="cerrarCajaMes" class="menu-item">Cerrar Caja Mes</a></li> 
-                                    <li><a id="movimientosCaja" class="menu-item">Movimientos de Caja</a></li>
                                     <li><a id="movimientosCaja" class="menu-item">Movimientos de Caja</a></li>
                                     <li><a id="debitoToCaja" class="menu-item">Debito a Caja</a></li>
                                 </ul>

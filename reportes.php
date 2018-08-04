@@ -38,7 +38,6 @@
                             "rCumpleanos" => "Cumpleaños",
                             "rConsumos" => "Consumos realizados",
                             "exportarListaClientes" => "Listado Clientes",
-                            "cajaFacturado" =>  "Caja contra facturado",
                             "resumenCajaMes" => "Resumen Caja Mes"
                             );
         ?>
@@ -273,89 +272,6 @@
             <?php } 
         } // if exportarListaClientes
         
-
-
-        if($action == 'cajaFacturado') {
-            $mes = $fechaInicial;
-
-            $out = $reportesService->reporteCajaFacturado($mes, $fechaFinal);
-
-            $fechaAnterior = null;
-            $totalCobrado = 0; 
-            $totalFacturado = 0; 
-            $totalCobradoDia = 0;
-            $totalFacturadoDia = 0;
-            $totalCobradoPedidosMesAnterior = 0;
-            $totalFacturadoPedidoMesAnterior = 0;
-            ?>
-            <table>
-                <tr>
-                    <th style="text-align: left;">Nro</th>
-                    <th style="text-align: left;">F.Pedido</th>
-                    <th style="text-align: left;">Cliente</th>
-                    <th style="text-align: right;">Facturado</th>
-                    <th style="text-align: right;">Cobrado</th>
-                    <th>Es Mes Ant.</th>
-                </tr>
-
-            <?php
-                foreach ($out as $pedidoId => $item) { 
-                    $fechaPedido = new DateTime(date($item['fechaPedido']));
-                    $mesFechaPedido = intval($fechaPedido->format('m'));
-
-                    if(is_null($fechaAnterior)) {
-                        echo '<tr><td colspan="5">'. swapDateFormat($item['fechaCaja']) .'</td></tr>';
-                    } else {
-                        if($fechaAnterior != $item['fechaCaja']) {
-                            echo '<tr>
-                                      <td colspan="3" style="text-align: right;">Total Dia</td>
-                                      <td style="text-align: right;">'. $totalFacturadoDia .'</td>
-                                      <td style="text-align: right;">'. $totalCobradoDia .'</td>
-                                  </tr>
-                                  <tr><td colspan="5">'. swapDateFormat($item['fechaCaja']) .'</td></tr>';
-
-                            $totalFacturadoDia = 0;
-                            $totalCobradoDia = 0;
-                        }
-                    } ?>
-                    
-                    <tr>
-                        <td><?= $pedidoId ?></td>
-                        <td><?= swapDateFormat($item['fechaPedido']) ?> </td>
-                        <td><?= $item['nombreApellido'] ?> </td>
-                        <td style="text-align: right;"><?= $item['montoFacturado'] ?></td>
-                        <td style="text-align: right;"><?= $item['montoCobrado'] ?></td>
-                        <td style="text-align: center"><?= ($mesFechaPedido != $mes)? '<<---mes anterior' : '' ?></td>
-                    </tr>
-            <?php 
-                    $totalCobradoPedidosMesAnterior += ($mesFechaPedido != $mes)? $item['montoCobrado'] : 0;
-                    $totalFacturadoPedidoMesAnterior += ($mesFechaPedido != $mes)? $item['montoFacturado'] : 0;
-
-                    $totalFacturadoDia += $item['montoFacturado']; 
-                    $totalCobradoDia += $item['montoCobrado'];
-
-                    $totalFacturado += $item['montoFacturado'];
-                    $totalCobrado += $item['montoCobrado'];
-
-                    $fechaAnterior = $item['fechaCaja'];
-                }
-
-                echo '<tr>
-                          <td colspan="3" style="text-align: right;">Total Dia</td>
-                          <td style="text-align: right;">'. $totalFacturadoDia .'</td>
-                          <td style="text-align: right;">'. $totalCobradoDia .'</td>
-                      </tr>';
-                echo '<tr>
-                          <td colspan="3" style="text-align: right;">Total Mes</td>
-                          <td style="text-align: right;">'. $totalFacturado .'</td>
-                          <td style="text-align: right;">'. $totalCobrado .'</td>
-                      </tr>';
-                echo '<tr>
-                          <td colspan="3" style="text-align: right;"><strong>Correspondientes a pedidos del Mes anterior</strong></td>
-                          <td style="text-align: right;">'. $totalFacturadoPedidoMesAnterior .'</td>
-                          <td style="text-align: right;">'. $totalCobradoPedidosMesAnterior .'</td>
-                      </tr>';
-        } // if cajaFacturado
 
 
         // Resumen Caja Mes
